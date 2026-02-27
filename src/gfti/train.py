@@ -154,7 +154,7 @@ def train_gfti(
             z_t = model.transform(z)
             pred = model.head(z)
             task_loss = criterion(pred, yb)
-            kappa = curvature_loss(z, z_t)
+            kappa = curvature_loss(z, z_t, complexity_term=model.symmetry.complexity())
             loss = task_loss + config.beta * kappa
             optimizer.zero_grad()
             loss.backward()
@@ -165,7 +165,7 @@ def train_gfti(
             with torch.no_grad():
                 z = model.encode(X_test_t)
                 z_t = model.transform(z)
-                kappa = curvature_loss(z, z_t).item()
+                kappa = curvature_loss(z, z_t, complexity_term=model.symmetry.complexity()).item()
                 curvature_log.append(kappa)
                 pred = model(X_test_t)
                 nmse = normalized_mse(pred, y_test_t)
@@ -177,12 +177,14 @@ def train_gfti(
         final_nmse = normalized_mse(pred, y_test_t)
         z = model.encode(X_test_t)
         z_t = model.transform(z)
-        final_kappa = curvature_loss(z, z_t).item()
+        final_kappa = curvature_loss(z, z_t, complexity_term=model.symmetry.complexity()).item()
+        final_alpha = torch.sigmoid(model.symmetry.log_alpha).item()
 
     return {
         "test_nmse": final_nmse,
         "curvature": curvature_log,
         "final_curvature": final_kappa,
+        "final_alpha": final_alpha,
         "test_errors": test_errors,
     }
 

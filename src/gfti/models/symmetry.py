@@ -63,6 +63,11 @@ class MixtureOfSymmetries(nn.Module):
         P = sinkhorn_knopp(self.log_W, self.n_sinkhorn_iters, self.tau.item())
         return (P @ z.T).T
 
+    def complexity(self) -> torch.Tensor:
+        """Frobenius norm of Lie-algebra matrix A; MDL proxy for transformation complexity."""
+        A = (self.basis_weights.softmax(dim=0).unsqueeze(1).unsqueeze(2) * self.basis_matrices).sum(0)
+        return A.pow(2).sum()
+
     def forward(self, z: torch.Tensor) -> torch.Tensor:
         alpha = torch.sigmoid(self.log_alpha)
         cont = self._continuous_branch(z)

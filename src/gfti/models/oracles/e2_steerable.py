@@ -1,4 +1,4 @@
-"""E(2)-Steerable / rotation-invariant MLP for Universe A (SO(2) rotation)."""
+"""E(2)-Steerable / SO(2)-equivariant MLP for Universe A (SO(2) rotation)."""
 
 import torch
 import torch.nn as nn
@@ -8,7 +8,6 @@ class RotationInvariantMLP(nn.Module):
     """
     Rotation-invariant MLP for Universe A.
     Uses polar coordinate r = ||x||; invariant to SO(2).
-    Fallback when e2cnn has PyTorch 2 compatibility issues.
     """
 
     def __init__(self, input_dim: int = 2, hidden_dim: int = 32, output_dim: int = 1):
@@ -28,38 +27,50 @@ class RotationInvariantMLP(nn.Module):
         return self.net(r)
 
 
+class FourierFeatureMLP(nn.Module):
+    """
+    SO(2)-equivariant MLP using Fourier decomposition of representations.
+    Features: [r, cos(φ), sin(φ), cos(2φ), sin(2φ), ..., cos(Kφ), sin(Kφ)].
+    No external library required; reliable alternative to e2cnn.
+    """
+
+    def __init__(
+        self,
+        input_dim: int = 2,
+        hidden_dim: int = 32,
+        output_dim: int = 1,
+        max_freq: int = 5,
+    ):
+        super().__init__()
+        self.input_dim = input_dim
+        self.output_dim = output_dim
+        self.max_freq = max_freq
+        n_features = 1 + 2 * max_freq  # r + cos/sin for k=1..K
+        self.net = nn.Sequential(
+            nn.Linear(n_features, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, output_dim),
+        )
+
+    def _to_fourier_features(self, x: torch.Tensor) -> torch.Tensor:
+        r = (x[:, 0] ** 2 + x[:, 1] ** 2 + 1e-8).sqrt()
+        phi = torch.atan2(x[:, 1], x[:, 0])
+        feats = [r.unsqueeze(-1)]
+        for k in range(1, self.max_freq + 1):
+            feats.append(torch.cos(k * phi).unsqueeze(-1))
+            feats.append(torch.sin(k * phi).unsqueeze(-1))
+        return torch.cat(feats, dim=-1)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        feat = self._to_fourier_features(x)
+        return self.net(feat)
+
+
 def E2SteerableMLP(input_dim: int = 2, hidden_dim: int = 32, output_dim: int = 1) -> nn.Module:
     """
-    E(2)-Steerable MLP for Universe A. Uses e2cnn if available and compatible;
-    otherwise falls back to RotationInvariantMLP (PyTorch 2 + e2cnn mask bug).
+    E(2)-Steerable MLP for Universe A. Uses FourierFeatureMLP (SO(2) Fourier decomposition).
+    No e2cnn dependency; reliable across PyTorch versions.
     """
-    try:
-        from e2cnn import gspaces
-        from e2cnn import nn as e2nn
-
-        r2_act = gspaces.Rot2dOnR2(N=16)
-        in_type = e2nn.FieldType(r2_act, [r2_act.trivial_repr] * 2)
-        hidden_type = e2nn.FieldType(r2_act, [r2_act.regular_repr] * max(1, hidden_dim // 2))
-        out_type = e2nn.FieldType(r2_act, [r2_act.trivial_repr])
-
-        class _E2Steerable(nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.conv1 = e2nn.R2Conv(in_type, hidden_type, kernel_size=1)
-                self.relu = e2nn.ReLU(hidden_type)
-                self.conv2 = e2nn.R2Conv(hidden_type, hidden_type, kernel_size=1)
-                self.relu2 = e2nn.ReLU(hidden_type)
-                self.conv3 = e2nn.R2Conv(hidden_type, out_type, kernel_size=1)
-
-            def forward(self, x):
-                x = x.unsqueeze(-1).unsqueeze(-1)
-                x = self.conv1(x)
-                x = self.relu(x)
-                x = self.conv2(x)
-                x = self.relu2(x)
-                x = self.conv3(x)
-                return x.squeeze(-1).squeeze(-1).squeeze(-1)
-
-        return _E2Steerable()
-    except Exception:
-        return RotationInvariantMLP(input_dim, hidden_dim, output_dim)
+    return FourierFeatureMLP(input_dim=input_dim, hidden_dim=hidden_dim, output_dim=output_dim)

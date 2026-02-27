@@ -52,7 +52,9 @@ class UniverseB(BaseUniverse):
     def generate_test(self, n_samples: int, seed: int | None = None) -> Tuple[np.ndarray, np.ndarray]:
         rng = np.random.default_rng(seed)
         base = rng.uniform(-self.value_range, self.value_range, size=(n_samples, 5))
-        X = _transpose_permute(base, 0, 1)
+        pairs = [(i, j) for i in range(5) for j in range(i + 1, 5)]  # all 10 transpositions
+        chosen = [pairs[k] for k in rng.integers(0, len(pairs), size=n_samples)]
+        X = np.stack([_transpose_permute(base[k : k + 1], *chosen[k]) for k in range(n_samples)]).squeeze(1)
         y = _cyclic_target(X)
         return X.astype(np.float32), y.astype(np.float32).reshape(-1, 1)
 

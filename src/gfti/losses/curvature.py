@@ -7,6 +7,7 @@ import torch.nn as nn
 def curvature_loss(
     z: torch.Tensor,
     z_transformed: torch.Tensor,
+    complexity_term: torch.Tensor | None = None,
     complexity_penalty: float = 0.01,
 ) -> torch.Tensor:
     """
@@ -16,4 +17,6 @@ def curvature_loss(
     Lower curvature = better symmetry discovery.
     """
     residual = (z - z_transformed).pow(2).sum(dim=-1).mean()
+    if complexity_term is not None:
+        return residual + complexity_penalty * complexity_term
     return residual
