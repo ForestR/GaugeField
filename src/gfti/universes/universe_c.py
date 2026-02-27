@@ -26,11 +26,18 @@ class UniverseC(BaseUniverse):
     Lorentz (SO(1,1)) universe.
     Generative law: y = x₁² − x₂² (spacetime interval, Lorentz invariant)
     Train orbit: rapidity ψ ∈ [0, 0.5]
-    Test orbit (OOD): rapidity ψ ∈ [2.0, 3.0]
+    Test orbit (OOD): rapidity ψ ∈ [test_psi_min, test_psi_max]
     """
 
-    def __init__(self, base_scale: float = 0.5):
+    def __init__(
+        self,
+        base_scale: float = 0.5,
+        test_psi_min: float = 2.0,
+        test_psi_max: float = 3.0,
+    ):
         self.base_scale = base_scale
+        self.test_psi_min = test_psi_min
+        self.test_psi_max = test_psi_max
 
     def generate_train(self, n_samples: int, seed: int | None = None) -> Tuple[np.ndarray, np.ndarray]:
         rng = np.random.default_rng(seed)
@@ -43,7 +50,7 @@ class UniverseC(BaseUniverse):
     def generate_test(self, n_samples: int, seed: int | None = None) -> Tuple[np.ndarray, np.ndarray]:
         rng = np.random.default_rng(seed)
         x_base = rng.uniform(-self.base_scale, self.base_scale, size=(n_samples, 2))
-        psi = rng.uniform(2.0, 3.0, size=n_samples)
+        psi = rng.uniform(self.test_psi_min, self.test_psi_max, size=n_samples)
         X = np.stack([_lorentz_boost(x_base[i : i + 1], psi[i]) for i in range(n_samples)], axis=0).squeeze(1)
         y = _interval(X)
         return X.astype(np.float32), y.astype(np.float32).reshape(-1, 1)

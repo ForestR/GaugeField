@@ -25,7 +25,7 @@ def _run_single_baseline(args_tuple: tuple) -> tuple[str, dict]:
     Returns (baseline_id, results_dict).
     """
     bl, universe_name, cfg, train_config_dict = args_tuple
-    universe = get_universe(universe_name)
+    universe = get_universe(universe_name, cfg)
     train_config = TrainConfig(**train_config_dict)
 
     if bl == "b2":
@@ -62,12 +62,17 @@ def _run_single_baseline(args_tuple: tuple) -> tuple[str, dict]:
     return (bl, results)
 
 
-def get_universe(name: str):
+def get_universe(name: str, cfg: dict | None = None):
     if name == "A":
         return UniverseA()
     if name == "B":
         return UniverseB()
     if name == "C":
+        if cfg and "test_psi_min" in cfg and "test_psi_max" in cfg:
+            return UniverseC(
+                test_psi_min=float(cfg["test_psi_min"]),
+                test_psi_max=float(cfg["test_psi_max"]),
+            )
         return UniverseC()
     raise ValueError(f"Unknown universe: {name}")
 
@@ -110,7 +115,7 @@ def main():
     with open(config_path) as f:
         cfg = yaml.safe_load(f)
 
-    universe = get_universe(args.universe)
+    universe = get_universe(args.universe, cfg)
     X_train, y_train = universe.generate_train(cfg["n_train_samples"], seed=cfg["seeds"][0])
     X_test, y_test = universe.generate_test(cfg["n_test_samples"], seed=cfg["seeds"][0] + 1)
 

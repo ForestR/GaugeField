@@ -1,4 +1,4 @@
-"""Universe B: S5 Cyclic Trap — y = Σ xᵢ·x_{(i mod 5)+1}, train on C5, test on transpositions."""
+"""Universe B: S5 Cyclic Trap — y = Σ tanh(xᵢ·x_{(i mod 5)+1}), train on C5, test on transpositions."""
 
 from typing import Tuple
 
@@ -8,13 +8,13 @@ from .base import BaseUniverse
 
 
 def _cyclic_target(x: np.ndarray) -> np.ndarray:
-    """y = Σ xᵢ·x_{(i mod 5)+1} for 5-element vectors."""
+    """y = Σ tanh(xᵢ·x_{(i mod 5)+1}) for 5-element vectors. Non-polynomial to defeat B4."""
     n = x.shape[1]
     assert n == 5
     total = np.zeros(x.shape[0], dtype=np.float32)
     for i in range(5):
         j = (i + 1) % 5
-        total += x[:, i] * x[:, j]
+        total += np.tanh(x[:, i] * x[:, j])
     return total
 
 
@@ -33,7 +33,7 @@ def _transpose_permute(arr: np.ndarray, i: int = 0, j: int = 1) -> np.ndarray:
 class UniverseB(BaseUniverse):
     """
     Cyclic trap (S5) universe.
-    Generative law: y = Σ xᵢ·x_{(i mod 5)+1}
+    Generative law: y = Σ tanh(xᵢ·x_{(i mod 5)+1}) — non-polynomial to defeat B4
     Training: C5 subgroup (cyclic shifts only)
     Test (OOD): Transpositions (e.g. swap first two)
     """

@@ -34,10 +34,12 @@ class MixtureOfSymmetries(nn.Module):
         n_basis: int = 8,
         n_sinkhorn_iters: int = 20,
         init_tau: float = 1.0,
+        fixed_alpha: float | None = None,
     ):
         super().__init__()
         self.dim = dim
         self.n_sinkhorn_iters = n_sinkhorn_iters
+        self.fixed_alpha = fixed_alpha
         self.register_buffer("tau", torch.tensor(init_tau))
 
         # Continuous branch: A = sum_k w_k M_k, then exp(A)
@@ -69,7 +71,11 @@ class MixtureOfSymmetries(nn.Module):
         return A.pow(2).sum()
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
-        alpha = torch.sigmoid(self.log_alpha)
+        alpha = (
+            torch.tensor(self.fixed_alpha, device=z.device, dtype=z.dtype)
+            if self.fixed_alpha is not None
+            else torch.sigmoid(self.log_alpha)
+        )
         cont = self._continuous_branch(z)
         disc = self._discrete_branch(z)
         return alpha * cont + (1 - alpha) * disc

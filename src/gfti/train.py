@@ -26,6 +26,7 @@ class TrainConfig:
     tau_init: float = 1.0
     tau_final: float = 0.1
     tau_anneal_epochs: int = 200
+    fixed_alpha: float | None = None
 
 
 def set_seed(seed: int):
@@ -178,7 +179,11 @@ def train_gfti(
         z = model.encode(X_test_t)
         z_t = model.transform(z)
         final_kappa = curvature_loss(z, z_t, complexity_term=model.symmetry.complexity()).item()
-        final_alpha = torch.sigmoid(model.symmetry.log_alpha).item()
+        final_alpha = (
+            model.symmetry.fixed_alpha
+            if model.symmetry.fixed_alpha is not None
+            else torch.sigmoid(model.symmetry.log_alpha).item()
+        )
 
     return {
         "test_nmse": final_nmse,

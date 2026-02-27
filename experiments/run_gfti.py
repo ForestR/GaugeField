@@ -24,28 +24,35 @@ def _run_single_gfti(args_tuple: tuple) -> dict:
     Returns the result dict for that run.
     """
     seed, universe_name, cfg, train_config_dict = args_tuple
-    universe = get_universe(universe_name)
+    universe = get_universe(universe_name, cfg)
     train_config = TrainConfig(**train_config_dict)
     train_config.seed = seed
 
     X_train, y_train = universe.generate_train(cfg["n_train_samples"], seed=seed)
     X_test, y_test = universe.generate_test(cfg["n_test_samples"], seed=seed + 1000)
 
+    fixed_alpha = train_config_dict.get("fixed_alpha")
     model = GFTIPrototype(
         input_dim=universe.input_dim,
         hidden_dim=cfg["hidden_dim"],
         latent_dim=cfg["latent_dim"],
         output_dim=universe.output_dim,
+        fixed_alpha=fixed_alpha,
     )
     return train_gfti(model, X_train, y_train, X_test, y_test, train_config)
 
 
-def get_universe(name: str):
+def get_universe(name: str, cfg: dict | None = None):
     if name == "A":
         return UniverseA()
     if name == "B":
         return UniverseB()
     if name == "C":
+        if cfg and "test_psi_min" in cfg and "test_psi_max" in cfg:
+            return UniverseC(
+                test_psi_min=float(cfg["test_psi_min"]),
+                test_psi_max=float(cfg["test_psi_max"]),
+            )
         return UniverseC()
     raise ValueError(f"Unknown universe: {name}")
 
@@ -71,13 +78,19 @@ def main():
         default=5,
         help="Max parallel jobs when --parallel (default: 5)",
     )
+    parser.add_argument(
+        "--fixed_alpha",
+        type=float,
+        default=None,
+        help="Fix branch: 1.0=continuous-only, 0.0=discrete-only, omit=learned",
+    )
     args = parser.parse_args()
 
     config_path = args.config or Path(__file__).parent / "configs" / f"universe_{args.universe.lower()}.yaml"
     with open(config_path) as f:
         cfg = yaml.safe_load(f)
 
-    universe = get_universe(args.universe)
+    universe = get_universe(args.universe, cfg)
     train_config = TrainConfig(
         epochs=int(cfg["epochs"]),
         batch_size=int(cfg["batch_size"]),
@@ -97,6 +110,7 @@ def main():
         "weight_decay": float(cfg.get("weight_decay", 0)),
         "device": args.device,
         "beta": float(cfg.get("beta", 0.1)),
+        "fixed_alpha": args.fixed_alpha,
     }
 
     results = {"runs": []}
@@ -137,6 +151,7 @@ def main():
                 hidden_dim=cfg["hidden_dim"],
                 latent_dim=cfg["latent_dim"],
                 output_dim=universe.output_dim,
+                fixed_alpha=args.fixed_alpha,
             )
             out = train_gfti(model, X_train, y_train, X_test, y_test, train_config)
             results["runs"].append(out)
@@ -147,7 +162,8 @@ def main():
     results["alpha_trajectories"] = [r.get("final_alpha") for r in results["runs"]]
     print(f"GFTI test NMSE (mean): {results['test_nmse_mean']:.4f}")
 
-    out_path = output_dir / f"gfti_{args.universe}.json"
+    alpha_suffix = f"_alpha{args.fixed_alpha}" if args.fixed_alpha is not None else ""
+    out_path = output_dir / f"gfti_{args.universe}{alpha_suffix}.json"
     with open(out_path, "w") as f:
         json.dump(results, f, indent=2, default=str)
     print(f"Saved to {out_path}")

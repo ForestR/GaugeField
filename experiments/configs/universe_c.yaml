@@ -11,3 +11,6 @@ lr: 1e-3
 weight_decay: 0.01
 seeds: [42, 123, 456, 789, 1024]
 beta: 0.1
+# Milder test range for diagnostic: [1.0, 2.0]. v0.5.2 default: [2.0, 3.0]
+test_psi_min: 1.0
+test_psi_max: 2.0

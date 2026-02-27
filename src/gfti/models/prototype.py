@@ -19,6 +19,7 @@ class GFTIPrototype(nn.Module):
         latent_dim: int = 32,
         output_dim: int = 1,
         num_layers: int = 3,
+        fixed_alpha: float | None = None,
     ):
         super().__init__()
         self.input_dim = input_dim
@@ -32,7 +33,7 @@ class GFTIPrototype(nn.Module):
             if i < len(dims) - 2:
                 layers.append(nn.ReLU())
         self.encoder = nn.Sequential(*layers)
-        self.symmetry = MixtureOfSymmetries(latent_dim)
+        self.symmetry = MixtureOfSymmetries(latent_dim, fixed_alpha=fixed_alpha)
         self.head = nn.Linear(latent_dim, output_dim)
 
     def encode(self, x: torch.Tensor) -> torch.Tensor:
