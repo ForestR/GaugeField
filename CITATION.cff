@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: GaugeField
+message: If you use this software, please cite it as below.
+type: software
+authors:
+  - family-names: ForestR
+    given-names: ""
+url: https://github.com/ForestR/GaugeField
+repository-code: https://github.com/ForestR/GaugeField
+version: 0.5.2
+date-released: 2026-02-26
+keywords:
+  - gauge field theory
+  - symmetry discovery
+  - out-of-distribution generalization
+  - machine learning
