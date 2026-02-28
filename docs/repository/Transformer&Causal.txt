@@ -1,4 +1,6 @@
 # 大模型的第一性原理：（二）信号处理篇
+
+Pbulished: 2026-01-30
 Source: https://mp.weixin.qq.com/s/qaXrSaCQNRdthTO7Mf3EpQ
 
 **作者** | 白铂 博士  

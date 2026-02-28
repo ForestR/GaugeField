@@ -1,4 +1,6 @@
 # 230个大模型在婴幼儿认知题上集体翻车！揭秘多模态大模型的核心知识缺陷
+
+Published: 2025-10-10
 Source: https://mp.weixin.qq.com/s/aXFCjJ-S-w0nWFSIYpfYMw
 
 CoreCognition团队 投稿

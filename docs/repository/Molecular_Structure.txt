@@ -1,10 +1,10 @@
 # 字节Seed用化学思想搞AI，把DeepSeek-R1的脑回路拆成了分子结构
 
+Published: 2026-02-24
 Source: https://mp.weixin.qq.com/s/yL4n7oiWhLIlX31VeUU2xw
 
 **来源**：量子位 (QbitAI)  
 **作者**：闻乐  
-**日期**：2026年
 
 字节Seed都开始用化学思想搞大模型了——
 深度推理是共价键、自我反思是氢键、自我探索是范德华力？！

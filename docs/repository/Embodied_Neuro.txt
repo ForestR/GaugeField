@@ -1,0 +1,405 @@
+# 自然·通讯：具身神经形态智能的计算框架与系统前景
+
+Pbulished: 2026-02-27
+Source: https://mp.weixin.qq.com/s/VTX2grLLYwsNs3j_q5Gegg
+
+![封面图片](https://mmbiz.qpic.cn/mmbiz_jpg/wibWV1DB7tWJLwYgcQCpNNgMlzDDyQfrcuP0D7SgS7nRHsrhwBCSSibhlWuM8kfJcnAa1qZjrcBOzNSc7WrMyRPQ/0?wx_fmt=jpeg)
+*图注：自然·通讯：具身神经形态智能的计算框架与系统前景*
+
+**导语**
+当机器人在春晚舞台上完成高度同步的群体表演时，公众看到的是技术突破与视觉震撼；研究者则更关注一个问题：这种“群体协同”究竟意味着什么？
+
+从工程角度看，春晚机器人的协同动作通常依赖中央控制与精确编排，属于高度优化的集中式系统。然而，从复杂系统与人工智能的视角出发，这一现象也引出了一个更深层的问题——机器人能否在没有中央调度的情况下，通过局部感知与分布式决策实现真正的群体智能？
+
+近年来，具身神经形态智能（Embodied Neuromorphic Intelligence）作为融合类脑计算、事件驱动感知与低功耗神经动力学的新兴方向，为这一问题提供了新的理论与技术路径。该方向不仅关注单体机器人的感知—行动闭环能力，也为未来分布式机器人系统与群体自组织机制奠定潜在的计算基础。
+
+这篇2022 年发表于 *Nature Communications* 的综述论文系统梳理了具身神经形态智能的理论框架与技术挑战。
+
+*   **研究领域**：具身认知、类脑智能、神经形态工程
+
+![作者信息](https://mmbiz.qpic.cn/mmbiz_png/kYGbMpocXYPuX1Vj6XEGVxic9ZxK2qhAJb3ibtLGalDXsqXP5aGtBGM3JwZWGVD4unb8wNtfM3UTKtAS2u8kQGCg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1)
+*图注：Chiara Bartolozzi, Giacomo Indiveri, Elisa Donati | 作者；赵林 | 译者；赵乐、梁金 | 审校*
+
+**论文题目：**
+Embodied neuromorphic intelligence
+
+**论文链接：**
+[https://www.nature.com/articles/s41467-022-28487-2](https://www.nature.com/articles/s41467-022-28487-2)
+
+## 目录
+1.  [摘要](#摘要)
+2.  [一、机遇与挑战](#一机遇与挑战)
+3.  [二、智能机器人的需要](#二智能机器人的需要)
+    *   [神经形态感知](#1-神经形态感知让机器人看到变化而非看到图像)
+    *   [神经形态行为](#2-神经形态行为从动作执行到决策生成)
+    *   [神经感知和行为的计算基元](#3-智能感知和行为的计算基元)
+    *   [赢者通吃网络](#4-赢者通吃网络)
+    *   [状态依赖的智能处理](#5-状态依赖的智能处理让机器人记住情境)
+4.  [三、展望](#三展望)
+
+---
+
+## 摘要
+
+春晚机器人所呈现的是多体协同的视觉结构，但其协作机制主要依赖集中式控制。若要实现真正的分布式群体智能，则需要在单体层面构建低功耗、自主决策的计算单元——这正是具身神经形态智能试图回答的问题。
+
+设计与环境自主交互并能够完成复杂行为的机器人是一个公开的挑战，通过研究理解是什么让生物适应这个世界，我们将会从中获益。神经形态工程研究的是神经计算原理，目标是开发出可用于构建紧凑和低功耗处理系统的计算技术。本文讨论了为什么将神经形态技术——从感知到运动控制——赋予机器人，这一非常有前途的方法能够实现创造无缝融入社会的机器人。本文陈述了在这个方向上的初步尝试，强调开放的挑战，并提出可以克服发展限制的措施。
+
+## 一、机遇与挑战
+
+如果说春晚舞台展示了机器人“可编排能力”的极致，那么产业真正关心的问题是：机器人能否在开放场景中稳定运行？能否在不可预测环境下自主决策？
+
+我们将智能定义为能够有效地与环境互动，基于感官信号和内部状态的正确解析来规划合适的行为，实现其目标，学习和预测其行动的效果，并能够不断适应无约束情景的变化。最终，具身智能实现机器人在通用条件和任务中与环境快速交互 [1]。这一切要高效完成，意味着在处理噪音、可变性和不确定性的同时，尽量少地消耗电源、内存和空间计算等资源来执行稳健的信息处理。这就要求找到改善性能和增强稳健性的方法，该方法与在系统中增加通用计算资源、冗余和控制结构的标准工程方法不同。
+
+机器学习和计算神经科学的当前研究进展正在深刻影响人工智能领域（AI）[2-4]。然而，传统的计算和机器人技术远远不能像人类或其他动物那样执行依赖具身智能的任务 [1,5]。例如，制定长期导航的空间感知任务，以及需要快速反应时间和适应外部条件的精细电机控制任务。在此背景下，产生智能行为的一个核心要求是需要在多时间尺度上处理数据。这种多尺度方法支持即时感知分析、分层信息提取和时间结构化数据的记忆，用于终身学习、适应和记忆重组。虽然，传统计算可以通过高精度（比如32位浮点）的数值参数和将数据长期存储在外部存储器库中的方式实现在不同时间尺度上的处理，但是，这样操作会导致计算基底的功耗和面积/体积的需求大增，与生物神经网络相比性能堪忧 [6]。
+
+神经形态工程方法采用混合信号模拟/数字信号硬件来支持生物智能启发的神经计算基元（Neural Computational Primitives），这些基元与传统冯·诺依曼计算机体系架构 [7] 中使用的基元完全不同。神经形态工程方法能够提供节能且紧凑的解决方案，支持实现智能及其在机器人平台上的嵌入 [8]。然而，在机器人技术中应用神经形态工程方法需要克服许多阻力，往往使研究者无法遵循这一充满前景的方法。其挑战领域包括从全定制神经形态传感器芯片、传统计算模块与电机系统集成，到集成神经形态芯片的神经处理系统“编程”，也亟需一个原理框架使用神经元代替数字在这些设备中实现和组合计算基元、功能和操作。
+
+无论是常规机器人，还是神经形态机器人，都面临着开发兼顾鲁棒性和自适应的计算模块，以解决通用任务的挑战，尤其是在人 - 机协作任务中的应用。两者都亟需一个旨在组合这类模块的设计框架，以赋能给一个真正的自主智能体。在这一视角下，我们讨论了当前机器人技术和神经形态技术所面临的挑战，并提出克服当前挑战的潜在研究方向。
+
+## 二、从“舞台智能”到“现实智能”：智能机器人的真正需求
+
+在日益强大的可用计算资源的支持下，目前机器学习的发展在机器人领域取得了丰硕成果 [2-4]。然而，除了经过精确校准的机器人在受控环境中执行重复操作外，在自然环境中的自主操作仍然具有挑战性，这是因为动态环境具有可变性和不可预测性的特点。
+
+如方框1所述，与非控制环境和人类的交互，需要不断地推断、预测和适应环境、人类以及机器人平台本身的状态。现有的机器学习、深度网络和人工智能机器人技术并不能适应这类场景，因为这些现有方法通常需要很高的计算（功耗）资源。例如，深度神经网络一般有大量的参数，需要非常大的数据集，花费大量的训练时间训练，即使使用大型图形处理单元（GPU）集群，也未必能改善性能。而且，现有方法所使用的数据集大多是不符合实际情况的理想化数据构成的，对于机器人来说，这些数据集需要被定制和配置到特定平台 [9]。对于端到端强化学习，数据集依赖于机器人的运动和驱动，数据的采集和创建过程非常昂贵并且耗时。虽然虚拟仿真可以一定程度上改善这种不足，但是迁移学习技术并不能使用将预先训练好的体系架构迁移到实际应用场景。在大型数据集上离线训练需要使用高性能、功能强，昂贵且耗电的计算基础设施。相反，推理方法较少受到这个问题的困扰，可以在性能较低的嵌入式平台上运行，但是这是以非常有限或没有适应能力为代价换取来的，从而使系统很难被用于变幻莫测的现实世界场景 [10]。
+
+> **方框1：机器人适应领域的需要**
+> 虽然，目前大多数工业机器人都在受控环境中操作，以执行可编程和重复的动作，但是机器人研究正朝着人 - 机器人协作的方向发展，在日常任务中 [133,134]，机器人有望在无控制的环境中与人类进行互动和协作。不同个体的行为和环境物理状况可能会随时间和任务发生变化。因此，机器人的适应能力对于在现实世界和人类互动至关重要。在工业应用中，机器人设备会随着运行周期发生磨损，控制器需要在很长的时间尺度上适应设备特性的变化。
+> 在康复机器人领域，控制器既要适应医生个体的治疗过程，也要适应不同患者长期和短期的要求 [136]。在大多数交互式应用中，机器人必须能够在短时间内对突发的环境变化做出反应，例如切换到以前学习过的配置。自主飞行器需要应对环境的变化，比如风力和方向的变化；仿人和挖沙机器人需要适应不同类型的地形 [137]；机械手需要学会操纵不同重量和柔软度的物体。
+> 生物学为解决这些需求提供了丰富的案例集合，以适应上文描述的变化 [138,139]。在短时间尺度上，生物系统能够适应具有短期可塑性机制的恒定输入 [140]；对于较长的时间尺度，它们的传感器需要能够应对编码信号的灵敏度（例如，感光器适应全球平均光照，弱光下更敏感，或太阳直射下不敏感）[141]。在更长的时间尺度上，稳态机制调节整体神经活动，使其保持在定义的界限内，从而应对环境的缓慢变化，或者种群的整体驱动 [142]。
+
+因此，机器人技术的关键是减少或尽可能消除对数据和计算密集型算法的需要，有效地利用传感数据，并为持续在线学习制定解决方案，使机器人能够通过弱监督或自我监督获取新知识。实现这一目标的一个重要步骤是从静态（或基于框架）转移到动态（或基于事件）的计算范式，能够泛化和适应不同的应用场景、用户、机器人和目标。
+
+神经形态感知直接从传感器采集的层面来解决这些问题。它采用新颖的生物启发传感器，以异步事件策略高效地编码感官信息 [11]。它还采用计算基元从传感器获取的事件中提取信息，依靠一组多样化的脉冲驱动的计算模块。神经形态行为遵循的控制策略，通过整合多种感官输入来适应不同环境和操作条件，利用基于事件的计算基元来完成预期的任务。
+
+神经形态感知和行为都是基于计算基元，这些基元来源于生物大脑中神经回路的模型，因此非常适合用混合信号模拟/数字信号电路来实现 [12]。这为机器人技术中的神经形态感知和行为提供了高效的技术基础。例如，依赖于语境的合作和竞争信息处理，以及多时间尺度上的学习和适应 [13,14]。
+
+利用硬件神经形态计算基元开发和集成神经形态感知和行为，最终目的是设计具有端到端神经形态智能的机器人，如图1所示。
+
+![图1. 具有端到端神经形态智能的机器人](https://mmbiz.qpic.cn/mmbiz_png/wibWV1DB7tWJLwYgcQCpNNgMlzDDyQfrc4riamzVM4QbezX32k3fS49RYfmWR136jNiaNGVYjiaNZj5vevFF3Kt0qQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1)
+*图1. 具有端到端神经形态智能的机器人。从感知（紫红色）、智能行为（绿色）到动作执行（蓝色）都将采用脉冲神经网络（Spiking Neural Network，SNN）硬件技术来实现。| 来源：iCub picture ©IIT author Agnese Abrusci.*
+
+下一章节将介绍神经形态感知、动作规划和认知处理策略，总结这些领域最前沿的特征和问题。以一个路线图和一个“行动号召”来总结具身神经形态智能领域的进展。
+
+### 1. 神经形态感知：让机器人“看到变化”而非“看到图像”
+
+机器人通常包括许多收集外界信息的传感器，如摄像机、麦克风、触摸压力传感器、激光雷达、飞行时间记录传感器、温度传感器、力矩传感器、和距离传感器。在常规装置中，所有传感器都测量相应的物理信号，以固定的时间间隔采样，不论信号本身的状态和动态。它们通常提供一系列外部世界的静态快照。当信号静止时，它们继续传输冗余的数据，但没有额外的信息，并且当信号发生快速变化时可能会错过重要的数据样本，因此我们需要在采样率（用于捕捉动态信号）和数据负载之间进行权衡。
+
+相反，在大多数神经形态的传感系统中，只有当信号本身有足够大的变化时，才会采样并转换成数字脉冲（“事件”或“脉冲”），采用基于事件的时间编码方案 [15,16]，如脉冲密度或 $\Sigma-\Delta$ 调制 [17]。因此，数据采集适应于信号动力学，对于快速变化的刺激，事件速率增大，而对于缓慢变化的刺激，事件速率减小。这种类型的编码不会丢失信息 [18-20]，在活动稀疏场景下是效果更好。这种事件表征对于高效、快速、稳健和信息量很大的感知至关重要。技术改进包括减少对数据传输、存储和处理，以及高时间分辨率和低延迟。这对于机器人的实时应用极其有用。
+
+从运动传感器和瞬态成像仪 [21] 的设计出发，第一种具有足够分辨率、低噪声和传感器失配的事件驱动视觉传感器——动态视觉传感器（Dynamic Vision Sensor，DVS）[22] 和异步时间成像传感器（Asynchronous Time Imaging Sensor，ATIS）[23]——引发了事件驱动视觉处理算法的发展以及在机器人平台上的适配应用 [24]。这些传感器信息编码方式打破了使用几十年的传统摄像机静态帧编码方式。它们的新颖性要求发展一种新的原理方法来处理事件驱动感知。采用事件驱动的机器视觉方法快速目标跟踪 [25]、光流 [26-28] 或立体声 [29] 和同步定位与地图创建（SLAM）[30] 等具体任务，远优于常规算法。但是，这些算法及其硬件实现仍然存在任务特异性和适应性有限的问题。
+
+这些事件驱动的传感处理模块将逐步替代机器人框架中的对应模块（见图2）。然而，虽然已经取得了令人鼓舞的成果，但是由于需要改变思维方式来处理事件流而不是静态帧，因此在机器人技术中采用事件驱动的感知仍然困难。此外，这种新的数据表示要求开发新的特定接口、通信协议（如方框2和图3所示）和处理事件的软件库。开源的 JAVA [31] 和 C++ [32] 已经开发了33个库，在两个主要的机器人中间件——ROS和YARP——中开发，但是它们需要大型社区提供的额外贡献才能发展并达到机器人的成熟应用。最终，机器人领域可能更广泛采用一种结合基于帧和事件驱动模块的混合方法，并促进围绕它的社区的发展。然而，这种混合神经形态/传统的设计策略并不能充分利用神经形态范式的所有优点。
+
+![图2. 机器人的神经形态感知](https://mmbiz.qpic.cn/mmbiz_png/wibWV1DB7tWJLwYgcQCpNNgMlzDDyQfrcUpUOQmrsxibgiaHKpx17bia96Brx0hFT2lwA76XMN16T6OQReMFUzVWVQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1)
+*图2. 机器人的神经形态感知*
+
+为了实现具有完全神经形态视觉的机器人，神经形态和计算神经科学界已经开始深入研究立体视觉 [34] 和边缘 [35]、注意力 [36] 和物体识别 [37] 的感知模块。这些算法可以在神经形态计算基底上运行，以实现高效率、适应性和低延迟。
+
+神经形态传感器发展的路线图，从视觉开始非常弱地受到生物光传导的启发，再到听觉受到耳蜗的启发，后来才发展到触觉和嗅觉。事件驱动的采集原理在应用于其他感官模式时也非常有价值，特别是那些具有时间和空间局部化激活特性的模式，如触觉、听觉和力矩模式，那些需要极低的闭环控制延时的模式，如编码器和惯性测量单元（IMU）、激光雷达、飞行时间（Time-of-flight）、3D和接近传感器（Proximity Sensor），以及帮助机器人检测人类状态的传感器，例如肌电图（EMG）、脑电图（EEG）、质心等 [38]。
+
+可用的耳蜗要么依赖于亚阈值混合模硅基器件 [39,40]，要么依赖于现场可编程逻辑门阵列（FPGA）[41]。它们主要应用于声源定位和听觉注意，基于左右信号极其精确的时间足迹 [42,43] 和视听语音识别 [44] 实现。然而，它们在机器人上的集成仍然非常有限：与事件驱动的愿景一样，它们需要应用开发工具，以及可以被语音处理利用。
+
+触觉感知问题因为三个因素变得复杂化。首先，可用的不同物理传感器的数量；其次，传感器与硅读出装置之间交互非常困难；再次，在机器人平台上集成触觉传感器存在工程挑战，包括微型化，以及设计和实现具有良好机械性能、布线和鲁棒性的柔性和耐用材料。
+
+迄今为止，只有很少的神经形态触觉传感器被开发出来 [45-48]，除了实验室原型外，还没有稳定集成在机器人平台上的产品。在这些传感器集成到机器人上的同时，现有的基于时钟的集成传感可以用来支持事件驱动的机器人应用的开发。在这种“软”神经形态学方法中，前端时钟样本通过在软件 [49–51] 中实现的算法，或嵌入在数字信号处理器（DSPs）[52] 或 FPGAs [53,54] 中的算法，转换为基于事件的表示。同样的方法在其他感官模式中也很有价值，例如本体感觉 [55,56]，以支持事件驱动算法的开发并验证其在机器人中的应用。然而，它在大小、功率和延迟方面并不是最优的。
+
+对于所有的传感模式，最基本的神经形态学原理是“变化检测”（Change Detection），它是捕捉生物感觉编码本质的一种高度抽象。它也是一个定义良好的操作，使得从数据流 [15] 中提取信息的算法和方法得以形式化。更好地理解感知信号属性的复杂神经编码及其与主体行为决策的关系 [57]，以及它们在新型神经形态传感器设计中的应用，将增强人工智能提取相关信息并做出合适决策的能力。
+
+> **方框2：神经形态通信协议**
+> 像神经系统一样，神经形态系统依赖于数字通信：信息编码在电压脉冲（或尖峰）的时间上。在神经组织的三维结构的支持下，生物神经元与巨大的扇入和扇出有专门的连接。相反，硅神经元只能在二维平面使用导线，但它们可以利用金属导线比轴突快几个数量级的传输速度。因此，通过采用时间多路复用技术，使用相同的物理线路发送不同神经元的脉冲信号，可以部分解决物理连接上的这些限制。为了区分在同一根导线上传播的脉冲，源或目标神经元的身份会编码在数字世界中，实现所谓的地址事件表征（Address Event Representation，AER）协议 [143]。
+> 自90年代末以来，AER已经被神经形态社区在许多不同的设置及变体中实施。在机器人平台上集成这种通信协议的需求定义了一系列的要求，如事件通信的稀疏性、高噪声抑制、低延迟、足够的带宽和最小数量的导线，这些都可以导致广泛采用的标准的定义。在组合多个分布式传感器的机器人应用中，异步串行实现是最好的 [147]，因为使用同步协议将需要包括和同步多个时钟。鉴于最近大型行业对神经形态技术的吸收和研究团体的增长，定义一个通用标准是必要的，也是时机合适的，可以允许不同传感、计算和执行模块之间的互操作性。
+> 根据图3中应用、数据和物理层的定义，可以对通信协议进行标准化和优化。应用层包括发送或接收异步地址事件的神经形态组件。在应用层，时间代表自身：事件在发生时是异步通信的。在数据层，事件被捆绑到更大的包中，包的大小可以固定也可以变化。如果要使用MIPI或USB等良好建立的标准，这是一个必要的步骤。将AER接口到同步设施，需要在数据流中嵌入事件的精确时间信息（例如通过时间戳）。物理层定义了传输实际比特的方式。为了适应最先进的视觉传感器所需的带宽，可以使用成熟的高速通信标准，如差分信号。
+> 对于每一层，社区将必须定义通用规范，并开发必要的芯片集成接口电路，消除对桥接设备（如FPGA）的需求。从这个角度来看，标准应用层的定义将降低开发许多特定应用接口的成本。然而，最佳协议的需求定义在社区中仍然是一个开放的问题，并强烈依赖于应用。
+
+![图3. AER：事件驱动传感器与脉冲神经网络芯片之间的通信示例](https://mmbiz.qpic.cn/mmbiz_png/wibWV1DB7tWJLwYgcQCpNNgMlzDDyQfrc4riamzVM4QbezX32k3fS49RYfmWR136jNiaNGVYjiaNZj5vevFF3Kt0qQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1)
+*图3. AER：事件驱动传感器（三角形斑块，每个斑块有6个感知区域）与脉冲神经网络（SNN）芯片之间的通信示例。每个传感元件发出异步脉冲，通过仲裁发送给总线。同样被解复用送至SNN芯片上正确的突触。*
+
+### 2. 神经形态行为：从动作执行到决策生成
+
+机器人为了与环境进行有效的交互，需要选择最恰当的行为，依靠对其他智能体的注意、分配、预期、推理，根据它们对外部世界和自身状态的理解，规划正确的动作和动作序列。生物智能行为将执行高水平任务的能力，与从经验中估计未来事件的后果联系起来，产生目标导向的行动。
+
+关于哺乳动物神经系统如何进行智能行为的一个假设是，整个大脑皮层中使用一组有限的计算基元。计算基元是可组合的结构单元，可以从多个感觉模式中提取信息，并协调一组复杂的动作，这些动作依赖于智能体的目标和偶然场景（例如，障碍的存在、人类协作、工具）。
+
+目前，在神经形态域中选择最合适的行为或动作仅限于概念验证模型。方框3回顾了在神经形态设备上实现感知和处理的机器人的研究现状。大多数实现包括一个双稳态网络，区分模糊的外部刺激 [58] 和选择两个可能的动作之一。动态场理论（Dynamic Field Theory，DFT）是建模这类网络的参考框架，其基本计算单元是一个动态神经场（Dynamic Neural Field，DNF）[59]，在计算上相当于一个软赢者通吃网络（Winner-Take-All，WTA）。如方框4所述，WTA网络是可以在神经形态硬件中实现的核心计算基元之一。因此，动态神经场代表了一个理想的框架，可以将智能模型转换为与神经形态架构兼容的语言的可行实现 [60]。这类系统目前面临的挑战是，为在不确定条件下参与决策的皮层区域开发一个多区域和多任务的脉冲神经元模型。
+
+机器人技术的不同分支应对这一挑战时，通过探索生物启发的具身脑结构来实现更高级别的功能 [61]，为机器人提供与现实世界实时交互的技能。这些架构需要通过与环境的交互以及通过增量开发阶段来学习感觉运动技能 [62,63]。
+
+> **方框3：神经形态机器人**
+> *   **轮式机器人 (Wheeled Robots)**: 常被用来执行空间导航任务。然而，虽然最近在研究方面取得了进展 [300,148-150]，但是机器人在地图生成时视觉场景变化的鲁棒性，或者存储地图和路径规划数据的功耗和效能方面，仍然无法与生物系统相比。神经形态轮式机器人被用来验证神经系统如何以低功耗和有限资源（例如利用脉冲神经网络）完成任务。这些研究还处于初期阶段，但是在小型机器人智能体 [58,148,151,152] 中已经存在利用硬件脉冲神经网络实现基本导航任务（如左转/右转或调谐机器人的速度等）的成功实例。
+> *   **iCub**: iCub是一种类人型机器人，可以用来与神经形态设备进行闭环实验，因为它支持使用事件驱动的视觉和与神经形态处理器交互的触摸传感器。文献 [56] 的作者提出了一种神经形态结构，用于使用Loihi神经形态处理器实现头部姿态估计和场景表示 [70]。在一个基于动态神经场（DNF）的神经路径整合过程中，网络整合了电机命令来估计iCub的头部姿态。文献 [55] 使用的闭环PID控制器，采用关系型神经网络控制iCub头部旋转。该网络采用混合信号DYNAP-SE神经形态处理器实现 [69]。文献 [153] Vestibulo-Ocular Reflex (VOR) 采用自适应实时控制环路内的脉冲小脑模型。VOR协议移动了iCub的头和眼睛，其中包含一个摄像头，可以用来检查视网膜上的图像运动。在这些概念证明中，机器人表现出适应行为，但是仅限于一个自由度。
+> *   **无人机**: SNNs是控制需要快速反应时间（例如UAV的低延迟和快速响应时间）的资源受限智能体的有效途径。文献 [154] 中的无人机执行光流着陆，伴随着演化的SNN高频（超过250kHz）运行。与常规移动GPU相比，表现为更低（1/75）的功耗，性能没有任何损失，但仍然是一个自由度。类似的工作是将Loihi应用到无人机上，利用脉冲比例积分微分（Proportional Integral Derivative，PID）控制单个自由度。该控制器用神经元集群构建，其中单个脉冲携带传感和控制信号 [77]。
+> *   **机械臂**: 文献 [155] 的作者按照共同基准比较了Loihi和SpiNNaker2这两个平台机械臂控制的计算时间和有功能量。两个平台在特定参数区域都是高效的，SpiNNaker2在输入维数较高时效率更高，而Loihi在输入维数较低时效率更高。另一个例子部署了基于神经工程框架（NEF）的神经形态算法，用于逆运动学和PID控制的六自由度机械臂 [156]。该算法使用Nengo进行设计，并在Loihi上进行评估。同样，文献 [79] 中采用脉冲PID控制四自由度机械臂。将脉冲PID与PFM电机控制相结合，当所有电机同时工作时，系统达到1A以下的电流消耗。在现场可编程逻辑门阵列（FPGA）上实现控制器，可以运行在DYNAP-SE平台，机器人关节的控制命令被硅基神经元集群中接收，这些硅基神经元产生用于FPGA脉冲频率调制（PFM）的参考信号。
+> *   **足式机器人（Legged-robot）**: 中枢模式发生器（CPG）是一种产生和控制节律运动的计算基元。脉冲CPG技术被用在昆虫机器人的运动控制、协调单腿和多腿协调运动。脉冲CPG表现出稳定协调的运动模式，具有鲁棒性，适应外部扰动 [157]，可运行在FPGA上 [158]。
+
+一旦选择合适的行为，就必须将其转化为一系列动作的组合或动态运动基元，以产生丰富的复杂动作和行为切换，例如通过中枢模式发生器（Central Pattern Generator，CPG）产生的行走和游泳等不同节奏动作之间的切换。这些系统在产生多样化动作方面的稳定性和能力已经被有效证明 [65]。这促进了它们实施脉冲以进一步提高生物可塑性 [66]。因此，机器人从动物运动技能的生物学中获益，可以作为工具测试动物移动和运动控制模型，以及它们如何受到传感反馈影响 [67]。
+
+虽然从神经计算中得到启发，但是受神经系统启发的机器人最近才开始使用脉冲神经网络（Spiking Neural Network，SNN）和生物上可信的感知输入，以及支持脉冲神经网络和学习的相应计算基底。神经形态技术朝着这个方向迈进了一步。近年来，在开发大规模类脑计算技术 [68-71] 方面取得了实质性进展，这些技术允许探索不同神经处理基元的计算作用，以构建智能系统 [72-74]。虽然人们对这些功能背后的神经活动的认识在不断增加，但是我们还不能明确和定量地将智能与神经结构和活动联系起来。这阻碍了大规模系统的配置以实现有效的行为和行动规划。开发工具以脉冲神经元为基础来实现数学功能的一个案例是神经工程框架（Neural Engineering Framework，NEF）[75]，它已经被成功地部署到一个具有自适应电机控制的机器人手臂 [76]。NEF形式化允许使用神经元作为计算单元，实现标准控制理论，却忽略了实现相同功能的脑结构和典型回路。
+
+目前基于类脑计算基元的运动控制的研究，主要集中在将成熟的机器人控制器转换为在神经形态设备上运行的脉冲神经网络 [56,77-79]。尽管许多成果显示这项技术的应用潜力，但这些实现仍然遵循一种混合方法，即神经形态模块必须与标准的机器人模块实现通信接口。在上文的例子中，电机被具有专有算法和封闭/无法访问的电子元件的嵌入式控制器所驱动。因此，需要对由经典传感器测量的连续感知信号进行脉冲编码，并将脉冲信息解码为与经典电机控制器兼容的信号。这就不可避免地限制了混合系统的性能，性能改善需要采用基于端到端的事件处理机制。
+
+在这方面，由于系统层级的接口问题，标准电机控制器及其相应的脉冲设备的性能无法在相同的机器人任务上进行基准测试。为了设计完全神经形态的端到端机器人系统，必须设计新的基于事件的传感器（例如，IMU、编码器、压力）来弥补现有的传感器（例如音频、视频、触摸）。另外，电机或执行器应由脉冲训练直接控制，从脉冲宽度调制（PWM）转变为脉冲频率调制（PFM）[80–82]。
+
+此外，端到端的神经形态机器人系统可以受益于，将目前机器人研究中使用的基本方法（例如，模型预测控制（MPC）、比例积分微分（PID））替换为生物上更可信的方法（如运动神经元-Golgi-肌梭结构 [83]），这些方法可以直接由神经形态处理器上的脉冲神经网络回路实现。然而，这种方法的缺点在于这些处理器所使用的有限分辨率和噪声计算基底，以及缺乏一种既定的控制理论，即利用脉冲神经网络（例如整合、适应、整流）中存在的线性和非线性算子。提出的生物启发的控制策略可能会受益于生物启发执行器的使用，如肌腱 [48]、激动剂 - 拮抗剂肌肉 [84]、软执行器 [85]。在提供更柔顺的行为的同时，这些行为引入了传统方法难于实现控制的非线性，但是符合由神经元和突触网络驱动的生物驱动的内在特性。
+
+> **方框4：硬件神经基元词典**
+> *   **传感器**: 将模拟和连续的物理信号转变成模拟神经感知编码的电离散脉冲。依靠物理位置、形状和局部计算，它们可以采用非平庸方式对传感信号进行预处理。例如，视觉神经形态传感器作为边缘特征提取器 [11]，神经形态耳蜗起频率作为调谐滤波器 [159]。
+> *   **神经元**: 会随着时间的推移整合多源信息，并根据影响其状态的多个因素，通过数字电压脉冲（动作电位或脉冲）将模拟运算结果传递给其他神经元。起始于Hodgkin和Huxley神经元模型 [160] 的硅基实现，其中不同的离子电流调节膜电位，人们提出了更紧凑的回路来更好地权衡精确建模和功能行为。Leaky Integration-and-Fire（LIF）[162] 模型捕捉到了这一原理，随时间推移整合脉冲，并产生与输入成正比的输出放电。广义LIF回路再现神经元的特征簇状发放（Burst）行为 [163-165]。
+> *   **突触**: 连接神经元，介导信息在神经元之间的传播。它们最简单的实现方式是向神经元膜内注入一定量电流；使用少量晶体管来增加突触后电流的时间动态 [166]。该信息通过兴奋或抑制连接传递，增加或减少接收神经元的活性。
+> *   **可塑性（Plasticity）**: 是根据突触的状态和输入活动改变神经计算和突触传递行为的机制。它支持自适应和学习。一些电路实现了短时（几十毫秒）活动相关的可塑性，如短时抑制（STD）[167] 和短时激励（STF）[168]，或脉冲频率适应（SFA）[169]，有助于增强传输信息的变化和过滤恒定活动。由连接神经元的一致激活驱动的长期（秒级）可塑性支持Hebbian类型的学习 [170–175]。纳米技术 [46,176–178] 的进步正在促成硬件可塑性基元，朝着密集集成的方向发展。在长期可塑性范围内，学习突触中的多个时间尺度使用离散和约束状态 [179] 增加网络的记忆容量。非常长期的可塑性（以天为长度）支持整体网络活动的同态调节。面对网络的长期变化或输入刺激的变化，保持在功能范围内 [14]。
+> *   **神经振荡器（Neural Oscillator）**: 发现于神经皮层，依靠两个相互连接的神经群体通过节律活动的产生来支持特征融合和运动协调。神经振荡器的一个具体实例是中枢模式发生器（CPG）。它们依赖于神经元脉冲频率适应，能够产生丰富多样的复杂运动和转换行为，支持步行、游泳和飞行 [100]。
+> *   **延迟/时间测量**: 电路从昆虫大脑中获得灵感，其中运动计算为刺激从一个感知元件到邻居的行程时间 [180]。这种类型的计算基元对运动估计和避障 [88] 是有用的。
+> *   **合作 - 竞争网络**: 依赖于循环连接的神经元网络。从功能上讲，它们处理信息的方式考虑了语境和不同单位的相对激活。对一个兴奋神经元群的循环抑制（Recurrent Inhibition）有助于提高神经元对特定特征的选择性，因为具有相似选择性的神经元相互强化对方的反应，抑制其他被调谐到不同特征的神经元的响应 [34,181]。关系网络使用循环连接来表示变量之间的相对依赖关系，例如计算被测信号与目标值 [78] 之间的误差。
+> *   **执行器（Actuator）**: 移动并控制身体的部分，达到预期的动作。不同类型的执行器依赖于不同物理性质的机器人。
+
+### 3. 智能感知和行为的计算基元
+
+除了采用神经形态传感器外，完全端到端的神经形态传感运动系统的实现需要从根本上改变信号处理和计算的方式。特别是，它要求将通常使用标准计算平台（如微控制器、DSP或FPGA器件）替换为可以使用神经形态处理系统实现的计算基元。也就是说，由大量脉冲神经元实现的计算基元，这些神经元作用于从内部和外部传感器获得的信号，学习预测统计数字，处理并将连续的传感输入流转换成离散的符号，并表示内部状态和目标。通过在神经形态硬件基底中支持这些计算基元，这样的架构将能够进行感知、规划和预测。它将能够产生状态依赖的决策和电机命令来驱动机器人并产生自主行为。这种方法将允许集成多个神经形态感知处理系统，完成实时感知和动作之间的循环，具有自适应、低延迟和低功耗特点。
+
+实现一个模拟物理或生物神经处理系统的硬件基底，并使用它来实现计算基元，可以被视为一种实现具身智能的方法。在这方面，人们可以把这些硬件计算基元看作“认知的元素”[86]，从而可以在具身神经形态智能与认知机器人技术 [87] 的研究之间架起桥梁。
+
+目前已有一些关于神经形态处理系统的案例，通过模拟真实神经元的动力学进行信号处理和计算，支持实现脑启发计算基元 [42,69,88]。这些系统不是使用串行、二进制、时钟、时分复用表示，而是使用大规模并行的内存计算模拟电路。最近，在开发遵循这种并行内存计算策略的大规模脑启发计算技术方面也取得了实质性进展，其中硅基电路可以放慢到与机器人应用相关的时间尺度 [69,71,89]。
+
+通过神经形态模拟回路的多个并行阵列的动力学实现计算基元，可以绕过使用时钟化的、时分复用回路将物理时间与处理时间解耦的需要，避免可恶的冯·诺依曼瓶颈问题 [7,8,90]——这要求以非常高的时钟速率来回将数据从外部存储器中传输到时分复用处理单元。虽然神经形态学方法显著降低了功耗，但它需要电路和处理元件，能够在与被感知信号相匹配的时间尺度上集成信息。例如，机器人关节运动的控制、语音命令的感知，或对视觉目标或人体手势的跟踪，都需要突触和神经回路具有在 $5\text{ms}-500\text{ms}$ 范围内时间常数。
+
+除了实现能够具有如此长久记忆痕迹的紧凑可靠电路元件的技术挑战外，还有一个重要的理论挑战是理解如何利用这类非线性动力系统进行期望状态计算。与传统的计算方法不同，仍然缺乏编译器”工具的等价物，它允许将所需的复杂计算或行为映射到基本计算单元的“机器码”级配置中，如动态突触或“整合与放电”神经元。解决这一挑战的一个方法是，确定一组受大脑启发的神经计算基元，这些基元与用于实现它们的神经形态电路的特征和限制兼容 [12,91-94]，并且可以模块化方式组合以实现所需的高级计算基元功能。方框4列出了这类基元的建议词典。
+
+此外，机器人系统的计算要求必须把传感器和执行器当作计算基元，根据它们的物理形状（例如，复眼相对于视网膜样的凹形或均匀视觉传感器，无刷和直流电机相对于软执行器）、位置（例如，双眼与单眼视觉，触觉传感器的非均匀分布以及电机相对于移动的身体部位的位置）和局部计算（如传感器中的特征提取或低水平闭环控制等）来决定对感知信号和运动的编码。
+
+基于所要求的结果，神经回路可以被赋予实现非线性的附加性质，如脉冲频率自适应（SFA）或不应期设置。这些要素可以进一步组合生成计算基元，如软WTA网络 [95–99]、神经振荡器 [100] 或状态相关计算网络 [7,12,101]，以识别或生成动作序列 [8,78,102–107]。通过将这些与感知和驱动神经基元相结合，可以创造出机器人的丰富行为。
+
+### 4. 赢者通吃网络
+
+赢者通吃（WTA，Winner-Take-All）网络代表一种典型的回路，在新皮质的多个部分中都可以找到 [108,109]。理论研究表明，这类网络提供了可以稳定对神经元动力学进行去噪的基本计算单元 [108,110,111]。这些特性已通过神经形态SNN实现得到验证，以在封闭的感觉运动回路（Sensorimotor Loop）中产生稳健的行为 [97,101,112–114]。由 $n$ 个单元组成的WTA网络可以用群体编码（Population Coding）表示 $n$ 值变量。这样就有可能将多个WTA网络相互耦合，实现不同变量间的关系网络 [115,116]（例如表示给定电机指令值与期望关节角度之间的关系 [78]）。由于WTA网络能够创造持续的激活以保持神经元状态的活跃，即使在网络的输入被移除后，它们也能提供工作记忆的模型 [100,102,117,118]。
+
+WTA动力学创造稳定的吸引子在计算上等价于动态神经场（DNF），它使得能够在封闭的感觉运动回路中进行行为学习，感觉输入随着智能体产生动作而不断变化。为了学习感觉状态与其结果之间的映射，或者一个先决条件与一个动作之间的映射，动作前的感觉状态需要存储在神经元表征中。这可以通过在神经元群中创建一个重复激活来实现，即使初始输入停止，激活也可以在动作期间持续。当获得奖励或惩罚信号时 [60,119]，持续活动可用于更新感觉运动映射。最后，这些基于吸引子的表示可以稳健的方式将神经元回路动力学与机器人行为时间尺度联系起来 [8,118,120]，并被用来开发更复杂的嵌入式神经形态智能系统。然而，要实现这一目标，必须开发更高层次的控制策略和理论框架，与具有组成性和模块化特性的混合信号神经形态硬件兼容。
+
+### 5. 状态依赖的智能处理：让机器人“记住情境”
+
+状态依赖的智能处理是一个计算框架，可以支持开发更复杂的神经形态智能系统。在生物学中，真实的神经网络利用WTA型工作记忆结构执行状态相关计算，该结构由循环激发维持并由负反馈抑制调节 [121–126]。具体来说，皮质网络中状态相关处理的建模研究表明，耦合WTA网络如何能够复现有限状态机（Finite State Machines，FSMs）[101,123,127] 的计算性质。FSM是一种抽象计算机，只能处于它的 $n$ 个可能状态中的一个，并且在接受适当的外部输入时可以在状态之间转换。真正的FSM可以在二进制编码的数字计算机中稳健地实现。但是，它们使用神经形态的SNN架构构建的相应神经实现受到噪声和可变性的影响，与它们的生物学对应物非常相似。除了利用WTA网络的稳定特性外，神经形态工程师发现利用含噪的硅基神经元回路实现稳健可靠的FSM状态依赖处理的解决方案，是求助于类似许多脑区的去抑制机制 [128，129]。这些依赖于硬件状态的处理SNN被称为神经状态机（Neural State Machines, NSMs）[101，105]。它们代表了脉冲神经网络实现状态依赖和语境依赖计算的基本结构。多个神经状态机以模块化的方式交互，可以作为构建神经形态智能体 [105,130] 复杂认知计算的模块。
+
+神经形态传感器、计算基底和执行器结合起来，通过类似大脑的异步数字通信，构建具有具身智能的自主智能体。现有智能体从单片实现——即传感器直接连接到一个神经形态计算设备——到模块化实现，其中分布式传感器和处理设备通过中间件抽象层连接，在紧凑性和具有灵活性的特定任务实现之间进行权衡。这两种方法都将受益于通信协议的标准化（在方框2中讨论）。
+
+> **方框5：行动号召**
+> *   **对神经形态社区的号召**: 为了吸收和建立由用户群体和具身神经形态智能相关人士组成的更大社区，神经形态社区应侧重于设计模块化且可重用的感知和计算模块。一个通用通信协议的标准化如方框2所述，已经实现了模块和系统的共享。开源的算法和数据集共享将促进该领域的繁荣。一个里程碑将是定义一组基准，可以用来定量比较不同神经形态系统的特征和效益，如方框6所述。
+> *   **对计算神经科学社区的号召**: 神经元回路需要将感知信号转换为地址事件以便进一步处理。计算神经科学社区可以指出神经系统用来将模拟输入转换为脉冲和编码感知信号的原理和策略，来启发和教育神经形态工程师。与神经科学社区的紧密合作将带来对神经形态感知回路的重要改进 [57,182]。同样，这个社区可以为设计由噪声和非均匀电路组成的循环脉冲神经网络（Recurrent Spiking Neural Networks）来进行信号处理和计算提供有益的见解 [183-185]。在这方面，将特定的神经科学观察与它们最基本的计算作用联系起来，以便分离出足以实现给定功能的基本机制将非常重要。然后，硬件实现将重现这样一个简化的“极小”模型，其中特征、复杂性、细节和多样性具有相应的计算功能。
+> *   **对材料科学社区的号召**: 新兴的存储技术为改进传统的计算结构提供了巨大的希望，但同时也为设计能够直接模拟真实突触物理的新型固态纳米器件提供了重要的机遇，从而为更有效地实现神经计算原理提供了计算基础。因此，材料科学界应该尝试利用这些器件的非线性物理，以优化具身神经形态计算架构的设计 [94]。
+> *   **对计算机科学社区的号召**: 与计算机使用抽象层次来管理复杂运算的定义类似，计算机科学可以利用迄今为止发展起来的概念和工具来定义新的结合神经计算基元的方法来实现智能功能 [186]，如方框4所述。未来面临的一个挑战也是如何利用非线性动力学、随机和概率方法形式化计算，包括嵌入到机器人平台。
+> *   **对软机器人社区的号召**: 由于神经形态方法很好地适用于非平庸控制的复杂系统，它很适合软机器人技术。需要向神经形态社区提供未定义的用例。由此产生的感知和认知功能——使用神经形态计算基底实现——必须嵌入到机器人，适配平台的形态可能影响感知信号的获取方式（例如，通过传感器的不同放置方式）和动作的执行方式（例如，不同的运动方式，硬驱动和软驱动等）。神经形态工程，由于其能够实现自适应回路和系统来求解非线性控制系统，可以为软机器人的复杂控制提供解决方案。
+
+> **方框6：数据集和基准**
+> 用于评估不同神经形态处理器和行为系统性能的基准任务和数据集的定义是一项困难和具有挑战性的工作，目前还没有完全解决 [187]。虽然大多数现有的数据集（主要由机器学习社区开发）依赖于大量的静态数据集合，但是，神经形态数据集应该考虑神经形态系统使用的不同空间和时间表征。事实上，已经有人尝试创建新的数据集，对基于事件的处理算法和方法进行基准测试 [188,189,190,191,192]。
+> 然而，这些数据集只能用于比较非常有限的系统和方法。评估神经形态系统时空能力的特定基准将需要超越机器学习的标准模式。为了验证和比较大脑启发的神经形态行为系统的广泛光谱，有必要定义多个基准集，用于对复杂任务从端到端评估系统的性能。需要评估的计算例子包括时空模式识别、预测、注意力、决策、记忆、语言和空间感知，以及回归、聚类和降维。
+> 单独来看，这些任务对于机器学习社区正在解决的一些问题来说是常见的。但神经形态系统也应该包括性能作为使用资源的函数如何变化。与机器学习不同的是，神经形态系统的设计目的是最小化内存和功耗。所以效果的基准也应该包括节省功耗（如自主机器人），减少体积和重量（如无人机），减少延迟和响应时间，使得对输入信号和系统内部状态的噪声和变化的稳健性最大化。对于这些基准测试，内存和时间也是需要考虑的重要方面。鉴于神经形态系统使用“内存计算”，不能在任意时间访问外部存储库以获取信息，基准测试需要评估神经形态系统在需要将当前感知到的信号与几秒、几分钟甚至几小时前测量到的数据联系起来的任务中，能多好地运行。开发适当的任务来评估神经形态系统的存储性能，以适当地产生所期望的行为本身就是一个挑战。
+> 一旦定义了任务，基准测试还需要考虑上面讨论的其他稳健性、延迟或功耗。目前用于评估传统处理器和计算系统的标准数值，如精度、每秒浮点运算数（FLOPS）、每秒兆运算次数（TOPS）或每秒乘法和累加运算次数（MAC），在这种情况下是不合适的。
+
+## 三、展望
+
+春晚展示了具身神经形态智能体的“能力”。具身神经形态智能体正在快速发展。它们通过大脑启发的计算方法，与环境和人类进行更顺畅地互动。它们被设计为以一种考虑到许多不同信息源的方式自主决策和执行相应的行动，减少来自感知的不确定性和模糊性，不断学习和适应不断变化的条件。
+
+总的来说，传统机器人技术甚至目前的神经形态方法的整体系统设计，都还远远没有得到任何生物学的启发。如果整个系统设计以生物计算原理为基础，让对周围环境和机器人自身状态的估计、决策、计划和行动之间有紧密的交互，那么该领域将发生真正的突破。扩展到更复杂的任务仍然是一个挑战，需要进一步发展感知和行为，进一步协同设计能够自然映射到神经形态计算平台上、并被电子元件物理支持的计算基元。
+
+在系统层面，对于如何将所有感知和计算组件整合成一个连贯系统，有效地感知行为，我们仍然缺乏理解。此外，该领域还缺乏如何利用生物神经处理系统的复杂非线性特性的概念，例如在不同时间尺度上整合适应和学习。在理论/算法、硬件层面，可以利用新技术来满足这种需求。
+
+正如方框5、方框6所讨论的那样，神经形态智能成功的路线图包括神经形态社区的成长，需要与其他研究领域交流探讨。
+
+具身神经形态智能体的发展，为机器人产业打开新的想象空间。迄今为止，神经形态计算技术的特点已经通过概念应用得到验证，用于构建高效、紧凑的智能机器人系统，能够在充满挑战的现实环境中感知、行动和学习。在这项技术足够成熟能被用于解决复杂机器人任务并进入主流机器人技术前，还有许多问题需要解决。在短期内，当务之急是开发用户友好的工具以便集成和编程神经形态装置，使用户和机器人专家使用神经形态方法。研究遵循的路径可以类似于机器人技术所采用的路径，使用开源平台和开发用户友好的中间件。同样，社区应该有一套通用的指导原则来开发基于神经基元的智能。新的信息和信号处理理论应该在神经形态硬件和神经编码回路中设计异步的、基于事件的处理。这应该通过计算神经科学和信息论的神经形态社区的交互性影响来完成；此外，与材料和（软）机器人社区的互动将更好地界定神经形态方法的应用领域。最后，神经形态方法在机器人领域的应用同样也适用于其他领域，例如智能空间、汽车、假肢、康复和脑机接口，在这些领域可能需要解析不同类型的信号，以便做出决策并实时生成动作。
+
+春晚机器人的爆火，或许只是一个起点。真正的产业跃迁，不在于机器人是否能完成一场演出，而在于它们是否能在真实世界中持续、自主、可靠地行动。当机器人不再只是“舞台演员”，成为具身智能体时，产业的价值链也将被重新定义。而神经形态工程，正试图为这场转型提供底层计算范式。
+
+---
+
+### 参考文献
+
+1.  Barrett, L. Beyond the Brain: How Body and Environment Shape Animal and Human Minds (Princeton University Press, 2011).
+2.  LeCun, Y., Bengio, Y. & Hinton, G. Deep learning. Nature 521, 436–444 (2015).
+3.  Schmidhuber, J. Deep learning in neural networks: an overview. Neural Netw. 61, 85–117 (2015).
+4.  Sejnowski, T. J. The unreasonable effectiveness of deep learning in artificial intelligence. Proc. Natl Acad. Sci. (2020).
+5.  Jordan, M. I. Artificial intelligence—the revolution hasn’t happened yet. Harvard Data Sci. Rev. 1 (2019-07-01).
+6.  Silver, D. et al. Mastering the game of go with deep neural networks and tree search. Nature 529, 484–489 (2016).
+7.  Indiveri, G. & Liu, S.-C. Memory and information processing in neuromorphic systems. Proc. IEEE 103, 1379–1397 (2015).
+8.  Indiveri, G. & Sandamirskaya, Y. The importance of space and time for signal processing in neuromorphic agents. IEEE Signal Process. Mag. 36, 16–28(2019).
+9.  Pasquale, G., Ciliberto, C., Odone, F., Rosasco, L. & Natale, L. Are we done ith object recognition? the icub robot’s perspective. Robot. Autonomous Syst.112, 260–281 (2019).
+10. Hadsell, R., Rao, D., Rusu, A. & Pascanu, R. Embracing change: continual learning in deep neural networks. Trends Cogn. Sci. 24, 1028–1040 (2020).
+11. Liu, S.-C. & Delbruck, T. Neuromorphic sensory systems. Curr. Opin.Neurobiol. 20, 288–295 (2010).
+12. Chicca, E., Stefanini, F., Bartolozzi, C. & Indiveri, G. Neuromorphic electronic circuits for building autonomous cognitive systems. Proc. IEEE 102(September), 1367–1388 (2014).
+13. Qiao, N. et al. A reconfigurable on-line learning spiking neuromorphic processor comprising 256 neurons and 128k synapses. Front. Neurosci. 9, 141 (2015).
+14. Qiao, N., Bartolozzi, C. & Indiveri, G. An ultralow leakage synaptic scaling homeostatic plasticity circuit with configurable time scales up to 100 ks. IEEE Transactions on Biomedical Circuits and Systems 11, 1271–1277 (2017).
+15. Lazar, A. A. & Tóth, L. T. Perfect recovery and sensitivity analysis of time encoded bandlimited signals. IEEE Transactions on Circuits and Systems I: Regular Papers. 51, 2060–2073 (2004).
+16. Karen, A., Scholefield, A., & Vetterli M. Sampling and reconstruction of bandlimited signals with multi-channel time encoding. IEEE Transactions on Signal Processing 68, 1105–1119 (2020).
+17. Singh Alvarado, A., Rastogi, M., Harris, J. G. & Príncipe, J. C. The integrateand-fire sampler: a special type of asynchronous σ-δ modulator. In 2011 IEEE International Symposium of Circuits and Systems (ISCAS), 2031–2034 (2011).
+18. Akolkar, H. et al. What can neuromorphic event-driven precise timing add to spike-based pattern recognition? Neural Comput. 27, 561–593 (2015).
+19. Bartolozzi, C. et al. Event-driven encoding of off-the-shelf tactile sensors for ompression and latency optimisation for robotic skin. In 2017 IEEE/RSJ nternational Conference on Intelligent Robots and Systems (IROS), 166–173 (2017-09).
+20. Scheerlinck, C. et al. Fast image reconstruction with an event camera. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (WACV) (2020-03).
+21. Kramer, J. An integrated optical transient sensor. IEEE Trans. Circuits Syst. II: Analog Digital Signal Process. 49, 612–628 (2002).
+22. Lichtsteiner, P., Posch, C. & Delbruck, T. A 128x128 120 dB 15 μs latency asynchronous temporal contrast vision sensor. IEEE J. Solid-State Circuits 43, 566–576 (2008).
+23. Posch, C., Matolin, D. & Wohlgenannt, R. A QVGA 143 dB dynamic range frame-free PWM image sensor with lossless pixel-level video compression and time-domain CDS. IEEE J. Solid-State Circuits 46, 259–275 (2011).
+24. Gallego, G. et al. Event-based vision: a survey. IEEE Transactions on Pattern Analysis and Machine Intelligence 44, 154–180 (2020).
+25. Glover, A., Vasco, V. & Bartolozzi, C. A controlled-delay event camera framework for on-line robotics. In 2018 IEEE International Conference on Robotics and Automation (2018-05).
+26. Benosman, R., Ieng, S.-H., Clercq, C., Bartolozzi, C. & Srinivasan, M. Asynchronous frameless event-based optical flow. Neural Netw. 27, 32–37(2012).
+27. Gallego, G., Rebecq, H. & Scaramuzza, D. A unifying contrast maximization framework for event cameras, with applications to motion, depth, and optical flow estimation. In IEEE Int. Conf. Comput. Vis. Pattern Recog.(CVPR), vol. 1 (2018).
+28. Zhu, A. Z., Yuan, L., Chaney, K. & Daniilidis, K. Unsupervised event-based learning of optical flow, depth, and egomotion. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) (2019-06).
+29. Zhou, Y., Gallego, G. & Shen, S. Event-based stereo visual odometry. IEEE Transactions on Robotics 37, 1–18 (2021).
+30. Vidal, A. R., Rebecq, H., Horstschaefer, T. & Scaramuzza, D. Ultimate SLAM? combining events, images, and imu for robust visual SLAM in hdr and highspeed scenarios. IEEE Robot. Autom. Lett. 3, 994–1001 (2018).
+31. Delbruck, T. Jaer open source project. http://jaerproject.org (2007).
+32. Glover, A., Vasco, V., Iacono, M. & Bartolozzi, C. The event-driven software library for yarp with algorithms and icub applications. Front. Robot. AI. 4, 73 (2017).
+33. Mueggler, E., Huber, B. & Scaramuzza, D. Event-based, 6-DOF pose tracking for high-speed maneuvers. In Intelligent Robots and Systems (IROS), 2014 IEEE/RSJ International Conference on, 2761–2768 (IEEE, 2014).
+34. Osswald, M., Ieng, S.-H., Benosman, R. & Indiveri, G. A spiking neural network model of 3Dperception for event-based neuromorphic stereo vision systems. Sci. Rep. 7, 1–11 (2017).
+35. Vasco, V. et al. Vergence control with a neuromorphic icub. In IEEE-RAS International Conference on Humanoid Robots (Humanoids 2016), 732–738 (2016-11).
+36. Iacono, M. et al. Proto-object based saliency for event-driven cameras. In 2019 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), 805–812 (2019).
+37. Illing, B., Gerstner, W. & Brea, J. Biologically plausible deep learning. but how far can we go with shallow networks? Neural Netw. 118, 90–101 (2019).
+38. Romano, F. et al. The codyco project achievements and beyond: toward human aware whole-body controllers for physical human robot interaction. IEEE Robot. Autom. Lett. 3, 516–523 (2018).
+39. Hamilton, T. J., Jin, C., Van Schaik, A. & Tapson, J. An active 2-d silicon cochlea. IEEE Trans. Biomed. circuits Syst. 2, 30–43 (2008).
+40. Liu, S.-C., van Schaik, A., Minch, B. A. & Delbruck, T. Asynchronous binaural spatial audition sensor with 2 × 64 × 4 channel output. Biomed. Circuits Syst., IEEE Trans. 8, 453–464 (2014).
+41. Jiménez-Fernández, A. et al. A binaural neuromorphic auditory sensor for fpga: a spike signal processing approach. IEEE Trans. Neural Netw. Learn. Syst. 28, 804–818 (2017).
+42. Schoepe, T. et al. Neuromorphic sensory integration for combining sound source localization and collision avoidance. In 2019 IEEE Biomedical Circuits and Systems Conference (BioCAS), 1–4 (2019).
+43. Anumula, J., Ceolini, E., He, Z., Huber, A. & Liu, S. An event-driven probabilistic model of sound source localization using cochlea spikes. In 2018 IEEE International Symposium on Circuits and Systems (ISCAS), 1–5 (2018).
+44. Li, X., Neil, D., Delbruck, T. & Liu, S. Lip reading deep network exploiting multi-modal spiking visual and auditory sensors. In 2019 IEEE International Symposium on Circuits and Systems (ISCAS), 1–5 (2019).
+45. Caviglia, S., Pinna, L., Valle, M. & Bartolozzi, C. Spike-based readout of posfet tactile sensors. IEEE Trans. Circuits Syst. I – Regul. Pap. 64, 1421–1431 (2016).
+46. John, R. et al. Self healable neuromorphic memtransistor elements for decentralized sensory signal processing in robotics. Nat. Commun. 11, 4030 (2020).
+47. Wan, C. et al. An artificial sensory neuron with tactile perceptual learning. Adv. Mater. 30, 1801291 (2018).
+48. Lee, J.-H., Chung, Y. S. & Rodrigue, H. Long shape memory alloy tendonbased soft robotic actuators and implementation as a soft gripper. Sci. Rep. 9, 1–12 (2019).
+49. Rongala, U., Mazzoni, A., Camboni, D., Carrozza, M. & Oddo, C. Neuromorphic artificial sense of touch: Bridging robotics and neuroscience. In Bicchi A., B. W. (ed.) Robotics Research. Springer Proceedings in Advanced Robotics, chap. 3 (Springer, Cham., 2018).
+50. Ward-Cherrier, B., Pestell, N. & Lepora, N. F. Neurotac: A neuromorphic optical tactile sensor applied to texture recognition. In International conference on Robotics and Automation (ICRA) 2020 (2020).
+51. Nguyen, H. et al. Dynamic texture decoding using a neuromorphic multilayer tactile sensor. In 2018 IEEE Biomedical Circuits and Systems Conference (BioCAS), 1–4 (2018).
+52. Bergner, F., Dean-Leon, E. & Cheng, G. Design and realization of an efficient large-area event-driven e-skin. Sensors 20, (2020).
+53. Motto Ros, P., Laterza, M., Demarchi, D., Martina, M. & Bartolozzi, C. Eventdriven encoding algorithms for synchronous front-end sensors in robotic platforms. IEEE Sens. J. 19, 7149–7161 (2019).
+54. Lee, D.-H., Zhang, S., Fischer, A. & Bengio, Y. Difference target propagation. In Joint European Conference on Machine Learning and Knowledge Discovery in Databases, 498–515 (Springer, 2015).
+55. Zhao, J. et al. Closed-loop spiking control on a neuromorphic processor implemented on the icub. IEEE J. Emerg. Sel. Top. Circuits Syst. 10, 546–556 (2020).
+56. Kreiser, R. et al. An on-chip spiking neural network for estimation of the head pose of the iCub robot. Front. Neurosci. 14, 551 (2020).
+57. Panzeri, S., Harvey, C. D., Piasini, E., Latham, P. E. & Fellin, T. Cracking the neural code for sensory perception by combining statistics, intervention, and behavior. Neuron 93, 491–507 (2017).
+58. Milde, M. B., Dietmüller, A., Blum, H., Indiveri, G. & Sandamirskaya, Y. Obstacle avoidance and target acquisition in mobile robots equipped with neuromorphic sensory-processing systems. In International Symposium on Circuits and Systems, (ISCAS) (IEEE, 2017).
+59. Zibner, S. K. U., Faubel, C., Iossifidis, I. & Schoner, G. Dynamic neural fields as building blocks of a cortex-inspired architecture for robotic scene representation. IEEE Trans. Autonomous Ment. Dev. 3, 74–91 (2011).
+60. Sandamirskaya, Y. Dynamic neural fields as a step toward cognitive neuromorphic architectures. Front. Neurosci. 7, 276 (2014).
+61. Falotico, E. et al. Connecting artificial brains to robots in a comprehensive simulation framework: the neurorobotics platform. Front. Neurorobotics 11, 2 (2017).
+62. Patacchiola, M. & Cangelosi, A. A developmental cognitive architecture for trust and theory of mind in humanoid robots. IEEE Transactions on Cybernetics PP(99), 1–13 (2020).
+63. Richter, M., Sandamirskaya, Y. & Schöner, G. A robotic architecture for action selection and behavioral organization inspired by human cognition. In Intelligent Robots and Systems (IROS), 2012 IEEE/RSJ International Conference on, 2457–2464 (IEEE, 2012).
+64. Ijspeert, A., Crespi, A., Ryczko, D. & Cabelguen, J. From swimming to walking with a salamander robot driven by a spinal cord model. Science 315, 1416–1420 (2007).
+65. M. Wensing, P. & Slotine, J.-J. Sparse control for dynamic movement primitives. IFAC-PapersOnLine 50, 10114–10121 (2017).
+66. Tieck, J. C. V. et al. Generating pointing motions for a humanoid robot by combining motor primitives. Front. Neurorobotics 13, 77 (2019).
+67. Ijspeert, A. J. Amphibious and sprawling locomotion: from biology to robotics and back. Annu. Rev. Control, Robot., Autonomous Syst. 3, 173–199 (2020).
+68. Furber, S., Galluppi, F., Temple, S. & Plana, L. The SpiNNaker project. Proc. IEEE 102, 652–665 (2014).
+69. Moradi, S., Qiao, N., Stefanini, F. & Indiveri, G. A scalable multicore architecture with heterogeneous memory structures for dynamic neuromorphic asynchronous processors (DYNAPs). Biomed. Circuits Syst., IEEE Trans. 12, 106–122 (2018).
+70. Davies, M. et al. Loihi: a neuromorphic manycore processor with on-chip learning. IEEE Micro 38, 82–99 (2018).
+71. Neckar, A. et al. Braindrop: a mixed-signal neuromorphic architecture with a dynamical systems-based programming model. Proc. IEEE 107, 144–164 (2019).
+72. Rhodes, O. et al. spynnaker: A software package for running pynn simulations on spinnaker. Front. Neurosci. 12, 816 (2018).
+73. Lin, C.-K. et al. Mapping spiking neural networks onto a manycore neuromorphic architecture. In Proceedings of the 39th ACM SIGPLAN Conference on Programming Language Design and Implementation PLDI, 78–89 (ACM, 2018).
+74. Stefanini, F., Sheik, S., Neftci, E. & Indiveri, G. Pyncs: a microkernel for highlevel definition and configuration of neuromorphic electronic systems. Front. Neuroinfo. 8, 73 (2014).
+75. Eliasmith, C. & Anderson, C. Neural engineering: Computation, representation, and dynamics in neurobiological systems (The MIT Press, 2004).
+76. DeWolf, T., Stewart, T. C., Slotine, J.-J. & Eliasmith, C. A spiking neural model of adaptive arm control. Proc. R. Soc. B: Biol. Sci. 283, 20162134 (2016).
+77. Stagsted, R. K. et al. Event-based PID controller fully realized in neuromorphic hardware: a one dof study. In Intelligent Robots and Systems (IROS), 2010 IEEE/RSJ International Conference on (2020).
+78. Zhao, J., Donati, E. & Indiveri, G. Neuromorphic implementation of spiking relational neural network for motor control. In International Conference on Artificial Intelligence Circuits and Systems (AICAS), 2020, 89–93 (IEEE, 2020).
+79. Linares-Barranco, A., Perez-Peña, F., Jimenez-Fernandez, A. & Chicca, E. EDBiorob: a neuromorphic robotic arm with FPGA-based infrastructure for bioinspired spiking motor controllers. Front. Neurorobotics 14, 590163 (2020).
+80. Jimenez-Fernandez, A. et al. A neuro-inspired spike-based PID motor controller for multi-motor robots with low cost FPGAs. Sensors 12, 3831–3856 (2012).
+81. Perez-Peña, F., Leñero-Bardallo, J. A., Linares-Barranco, A. & Chicca, E. Towards bioinspired close-loop local motor control: a simulated approach supporting neuromorphic implementations. In 2017 IEEE International Symposium on Circuits and Systems (ISCAS) (2017).
+82. Donati, E., Perez-Pefia, F., Bartolozzi, C., Indiveri, G. & Chicca, E. Open-loop neuromorphic controller implemented on VLSI devices. In Biomedical Robotics and Biomechatronics (BIOROB), 7th IEEE International Conference on, 827–832 (2018-08).
+83. Shadmehr, R. et al. The computational neurobiology of reaching and pointing: a foundation for motor learning (MIT press, 2005).
+84. Huang, X. et al. Highly dynamic shape memory alloy actuator for fast moving soft robots. Adv. Mater. Technol. 4, 1800540 (2019).
+85. Schaffner, M. et al. 3d printing of robotic soft actuators with programmable bioinspired architectures. Nat. Commun. 9, 1–9 (2018).
+86. Schöner, G. Dynamical systems approaches to cognition. In Sun, R. (ed.) TheCambridge Handbook of Computational Psychology, 101–126 (CambridgeUniversity Press, 2008).
+87. Yang, C., Wu, Y., Ficuciello, F., Wang, X. & Cangelosi, A. Guest editorial:special issue on human-friendly cognitive robotics. IEEE Trans. Cogn.Developmental Syst. 13, 2–5 (2021).
+88. Milde, M. B. et al. Obstacle avoidance and target acquisition for robot navigation using a mixed signal analog/digital neuromorphic processing system. Front. Neurorobotics 11, 28 (2017).
+89. Thakur, C. S. et al. Large-scale neuromorphic spiking array processors: a quest to mimic the brain. Front. Neurosci. 12, 891 (2018).
+90. Backus, J. Can programming be liberated from the von Neumann style: a functional style and its algebra of programs. Commun. ACM 21, 613–641 (1978).
+91. Neckar, A. et al. Braindrop: a mixed-signal neuromorphic architecture with a dynamical systems-based programming model. Proc. IEEE 107, 144–164 (2018).
+92. Payvand, M., Nair, M. V., Müller, L. K. & Indiveri, G. A neuromorphic systems approach to in-memory computing with non-ideal memristive devices: from mitigation to exploitation. Faraday Discuss. 213, 487–510 (2019).
+93. Dalgaty, T. et al. Hybrid neuromorphic circuits exploiting non-conventional properties of RRAM for massively parallel local plasticity mechanisms. APL Mater. 7, 081125 (2019).
+94. Chicca, E. & Indiveri, G. A recipe for creating ideal hybrid memristive-CMOS neuromorphic processing systems. Appl. Phys. Lett. 116, 120501 (2020).
+95. Horiuchi, T. A spike-latency model for sonar-based navigation in obstacle fields. Circuits Syst. I: Regul. Pap., IEEE Trans. 56, 2393–2401 (2009).
+96. Oster, M., Douglas, R. & Liu, S.-C. Computation with spikes in a winner-takeall network. Neural Comput. 21, 2437–2465 (2009).
+97. Häfliger, P. Adaptive WTA with an analog VLSI neuromorphic learning chip. IEEE Trans. Neural Netw. 18, 551–572 (2007).
+98. Mostafa, H. & Indiveri, G. Sequential activity in asymmetrically coupled winner-take-all circuits. Neural Comput. 26, 1973–2004 (2014).
+99. Indiveri, G. A current-mode hysteretic winner-take-all network, with excitatory and inhibitory coupling. Analog Integr. Circuits Signal Process. 28(September), 279–291 (2001).
+100. Donati, E., Krause, R. & Indiveri, G. Neuromorphic pattern generation circuits for bioelectronic medicine. In 2021 10th International IEEE/EMBS Conference on Neural Engineering (NER), 1117–1120 (2021).
+101. Giulioni, M. et al. Robust working memory in an asynchronously spiking neural network realized in neuromorphic VLSI. Front. Neurosci. 5 (2012).
+102. Neftci, E. et al. Synthesizing cognition in neuromorphic electronic systems. Proc. Natl Acad. Sci. 110, E3468–E3476 (2013).
+103. Kreiser, R., Aathmani, D., Qiao, N., Indiveri, G. & Sandamirskaya, Y. Organising sequential memory in a neuromorphic device using dynamic neural fields. Front. Neurosci. 12, 717 (2018).
+104. Duran, B. & Sandamirskaya, Y. Learning temporal intervals in neural dynamics. IEEE Trans. Cogn. Developmental Syst. 10, 359–372 (2018).
+105. Liang, D. & Indiveri, G. A neuromorphic computational primitive for robust context-dependent decision making and context-dependent stochastic computation. IEEE Trans. Circuits Syst. II: Express Briefs 66, 843–847 (2019).
+106. Liang, D. & Indiveri, G. Robust state-dependent computation in neuromorphic electronic systems. In Biomedical Circuits and Systems Conference, (BioCAS), 2017, 108–111 (IEEE, 2017-10).
+107. Risi, N., Aimar, A., Donati, E., Solinas, S. & Indiveri, G. A spike-based neuromorphic architecture of stereo vision. Front. Neurorobotics 14, 93 (2020).
+108. Douglas, R. J. & Martin, K. A. Neuronal circuits of the neocortex. Annu. Rev. Neurosci. 27, 419–451 (2004).
+109. Douglas, R. & Martin, K. Recurrent neuronal circuits in the neocortex. Curr. Biol. 17, R496–R500 (2007).
+110. Maass, W. On the computational power of winner-take-all. Neural Comput. 12, 2519–2535 (2000).
+111. Rutishauser, U., Douglas, R. & Slotine, J. Collective stability of networks of winner-take-all circuits. Neural Comput. 23, 735–773 (2011).
+112. Indiveri, G. Neuromorphic analog VLSI sensor for visual tracking: Circuits and application examples. IEEE Trans. Circuits Syst. II 46, 1337–1347 (1999).
+113. Indiveri, G. Modeling selective attention using a neuromorphic analog VLSI device. Neural Comput. 12, 2857–2880 (2000).
+114. Bartolozzi, C. & Indiveri, G. Selective attention in multi-chip address-event systems. Sensors 9, 5076–5098 (2009).
+115. Cook, M. & Bruck, J. Networks of relations for representation, learning, and generalization (2005).
+116. Cook, M., Jug, F., Krautz, C. & Steger, A. Unsupervised learning of relations.In Artificial Neural Networks–ICANN 2010, 164–173 (Springer, 2010).
+117. Hahnloser, R. Emergence of neural integration in the head-direction systemby visual supervision. Neuroscience 120, 877–891 (2003).
+118. Johnson, J. S., Spencer, J. P. & Schöner, G. Moving to higher ground: Thedynamic field theory and the dynamics of visual cognition. N. Ideas Psychol.26, 227–251 (2008).
+119. Sandamirskaya, Y. & Conradt, J. Increasing autonomy of learning sensorimotortransformations with dynamic neural fields. In International Conference on Robotics and Automation (ICRA), Workshop “Autonomous Learning\" (2013).
+120. Sandamirskaya, Y., Zibner, S. K., Schneegans, S. & Schöner, G. Using dynamic field theory to extend the embodiment stance toward higher cognition. N. Ideas Psychol. 31, 322–339 (2013).
+121. Douglas, R., Koch, C., Mahowald, M., Martin, K. & Suarez, H. Recurrent excitation in neocortical circuits. Science 269, 981–985 (1995).
+122. Compte, A., Brunel, N., Goldman-Rakic, P. S. & Wang, X.-J. Synaptic mechanisms and network dynamics underlying spatial working memory in a cortical network model. Cereb. Cortex 10, 910–922 (2000).
+123. Dayan, P. Simple substrates for complex cognition. Front. Neurosci. 2, 255(2008).
+124. Harris, K. D. & Thiele, A. Cortical state and attention. Nat. Rev. Neurosci. 12, 509 (2011).
+125. Cheng-yu, T. L., Poo, M.-m & Dan, Y. Burst spiking of a single cortical neuron modifies global brain state. Science 324, 643–646 (2009).
+126. Schölvinck, M. L., Saleem, A. B., Benucci, A., Harris, K. D. & Carandini, M. Cortical state determines global variability and correlations in visual cortex. J. Neurosci. 35, 170–178 (2015).
+127. Rutishauser, U. & Douglas, R. State-dependent computation using coupled recurrent networks. Neural Comput. 21, 478–509 (2009).
+128. Hangya, B., Pi, H.-J., Kvitsiani, D., Ranade, S. P. & Kepecs, A. From circuit motifs to computations: mapping the behavioral repertoire of cortical interneurons. Curr. Opin. Neurobiol. 26, 117–124 (2014).
+129. Letzkus, J. J., Wolff, S. B. & Lüthi, A. Disinhibition, a circuit mechanism for associative learning and memory. Neuron 88, 264–276 (2015).
+130. Liang, D. et al. Robust learning and recognition of visual patterns in neuromorphic electronic agents. In Artificial Intelligence Circuits and Systems Conference, (AICAS), 2019 (IEEE, 2019-03).
+131. Brandli, C., Berner, R., Yang, M., Liu, S.-C. & Delbruck, T. A 240 × 180 130 dB 3 μs latency global shutter spatiotemporal vision sensor. IEEE J. Solid-State Circuits 49, 2333–2341 (2014).
+132. Posch, C. et al. Live demonstration: Asynchronous time-based image sensor (atis) camera with full-custom ae processor. In International Symposium on Circuits and Systems, (ISCAS), 1392 (IEEE, 2010).
+133. Ajoudani, A. et al. Progress and prospects of the human–robot collaboration. Autonomous Robots 42, 957–975 (2018).
+134. Siva, S. & Zhang, H. Robot perceptual adaptation to environment changes for long-term human teammate following. The International Journal of Robotics Research 0278364919896625.
+135. Tirupachuri, Y. et al. Towards partner-aware humanoid robot control under physical interactions. In (eds Bi, Y., Bhatia, R. & Kapoor, S.) Intelligent Systems and Applications, 1073–1092 (Springer International Publishing, 2020).
+136. Udupa, S., Kamat, V. R. & Menassa, C. C. Shared autonomy in assistive mobile robots: a review. Disability and Rehabilitation: Assistive Technology 1–22(2021).
+137. Magaña, O. A. V. et al. Fast and continuous foothold adaptation for dynamic locomotion through cnns. IEEE Robot. Autom. Lett. 4, 2140–2147 (2019).
+138. Gjorgjieva, J., Drion, G. & Marder, E. Computational implications of biophysical diversity and multiple timescales in neurons and synapses for circuit performance. Curr. Opin. Neurobiol. 37, 44–52 (2016).
+139. Marom, S. Neural timescales or lack thereof. Prog. Neurobiol. 90, 16–28 (2010).
+140. Abbott, L., Sen, K., Varela, J. & Nelson, S. Synaptic depression and cortical gain control. Science 275, 220–223 (1997).
+141. Shapley, R. & Enroth-Cugell, C. Chapter 9 visual adaptation and retinal gain controls. Prog. Retinal Res. 3, 263–346 (1984).
+142. Turrigiano, G., Leslie, K., Desai, N., Rutherford, L. & Nelson, S. Activitydependent scaling of quantal amplitude in neocortical neurons. Nature 391, 892–896 (1998).
+143. Deiss, S., Douglas, R. & Whatley, A. A pulse-coded Communications infrastructure for neuromorphic systems. In (eds Maass, W. & Bishop, C.) Pulsed Neural Networks, chap. 6, 157–78 (MIT Press, 1998).
+144. Boahen, K. A burst-mode word-serial address-event link – II: Receiver design. IEEE Trans. Circuits Syst. I 51, 1281–91 (2004).
+145. Serrano-Gotarredona, R. et al. AER building blocks for multi-layer multi-chip neuromorphic vision systems. In (eds Becker, S., Thrun, S. & Obermayer, K.) Advances in Neural Information Processing Systems, vol. 15 (MIT Press, 2005-12).
+146. Rast, A. D. et al. Transport-independent protocols for universal AER communications. In International Conference on Neural Information Processing, 675–684 (Springer, 2015).
+147. Ros, P. M., Crepaldi, M., Bartolozzi, C. & Demarchi, D. Asynchronous DCfree serial protocol for event-based AER systems. In 2015 IEEE International Conference on Electronics, Circuits, and Systems (ICECS), 248–251 (2015-12).
+148. Waniek, N., Biedermann, J. & Conradt, J. Cooperative SLAM on small mobile robots. 2015 IEEE International Conference on Robotics and Biomimetics (ROBIO) 1810–1815 (2015).
+149. Hwu, T., Krichmar, J. & Zou, X. A complete neuromorphic solution to outdoor navigation and path planning. Circuits and Systems (ISCAS), 2017 IEEE International Symposium on 1–4 (2017).
+150. Tang, G. & Michmizos, K. P. Gridbot: an autonomous robot controlled by a spiking neural network mimicking the brain’s navigational system. Proceedings of the International Conference on Neuromorphic Systems 1–8 (2018).
+151. Kreiser, R., Pienroj, P., Renner, A. & Sandamirskaya, Y. Pose estimation and map formation with spiking neural networks: towards neuromorphic slam. Intelligent Robots and Systems (IROS), 2018 IEEE/RSJ International Conference on (2018).
+152. Glatz, S., Martel, J., Kreiser, R., Qiao, N. & Sandamirskaya, Y. Adaptive motor control and learning in a spiking neural network realised on a mixed-signal neuromorphic processor. 2019 International Conference on Robotics and Automation (ICRA) 9631–9637 (2019).
+153. Naveros, F., Luque, N. R., Ros, E. & Arleo, A. VOR adaptation on a humanoid icub robot using a spiking cerebellar model. IEEE Trans. Cybern. 50, 4744–4757 (2019).
+154. Dupeyroux, J., Hagenaars, J. J., Paredes-Vallés, F. & de Croon, G. C. H. E.Neuromorphic control for optic-flow-based landing of MAVs using the loihi processor. 2021 IEEE International Conference on Robotics and Automation (ICRA) 96–102 (2021).
+155. Yan, Y. et al. Comparing Loihi with a SpiNNaker 2 prototype on lowlatency keyword spotting and adaptive robotic control. Neuromorphic Computing and Engineering (2021).
+156. Zaidel, Y., Shalumov, A., Volinski, A., Supic, L. & Tsur, E. E. Neuromorphic NEF-based inverse kinematics and PID control. Front. Neurorobotics 15, 631159 (2021).
+157. Strohmer, B., Manoonpong, P. & Larsen, L. B. Flexible spiking cpgs for online manipulation during hexapod walking. Front. Neurorobotics 14, 41 (2020).
+158. Gutierrez-Galan, D., Dominguez-Morales, J., Perez-Peña, F., Jimenez-Fernandez, A. & Linares-Barranco, A. Neuropod: a real-time neuromorphic spiking cpg applied to robotics. Neurocomputing 381, 10–19 (2020).
+159. Chan, V., Liu, S.-C. & van Schaik, A. AER EAR: A matched silicon cochlea pair with address event representation interface. IEEE Trans. Circuits Syst. I, Spec. Issue Sens. 54, 48–59 (2007).
+160. Hodgkin, A. & Huxley, A. A quantitative description of membrane current and its application to conduction and excitation in nerve. J. Physiol. 117, 500–44 (1952).
+161. Mahowald, M. & Douglas, R. A silicon neuron. Nature 354, 515–518 (1991).
+162. Indiveri, G. Neuromorphic bistable VLSI synapses with spike-timingdependent plasticity. Adv. Neural Inf. Process. Syst. (NIPS) 15, 1091–1098(2003).
+163. Indiveri, G. et al. Neuromorphic silicon neuron circuits. Front. Neurosci. 5,1–23 (2011).
+164. Izhikevich, E. Simple model of spiking neurons. IEEE Trans. Neural Netw. 14,1569–1572 (2003).
+165. Mihalas, S. & Niebur, E. A generalized linear integrate-and-fire neural model produces diverse spiking behavior. Neural Comput. 21, 704–718 (2009).
+166. Bartolozzi, C. & Indiveri, G. Synaptic Dynamics in Analog VLSI. Neural Comput 19, 2581–2603 (2007).
+167. Boegerhausen, M., Suter, P. & Liu, S.-C. Modeling short-term synaptic depression in silicon. Neural Comput. 15(February), 331–348 (2003).
+168. Ramachandran, H., Weber, S., Aamir, S. A. & Chicca, E. Neuromorphic circuits for short-term plasticity with recovery control. 2014 IEEE International Symposium on Circuits and Systems (ISCAS) 858–861 (2014).
+169. Indiveri, G. Synaptic plasticity and spike-based computation in VLSI networks of integrate-and-fire neurons. Neural Inf. Process. - Lett. Rev. 11, 135–146 (2007).
+170. Mitra, S., Fusi, S. & Indiveri, G. Real-time classification of complex patterns using spike-based learning in neuromorphic VLSI. Biomed. Circuits Syst., IEEE Trans. 3, 32–42 (2009).
+171. Wang, R. M., Hamilton, T. J., Tapson, J. C. & van Schaik, A. A neuromorphic implementation of multiple spike-timing synaptic plasticity rules for largescale neural networks. Front. Neurosci. 9, 180 (2015).
+172. Payvand, M. & Indiveri, G. Spike-based plasticity circuits for always-on online learning in neuromorphic systems. IEEE International Symposium on Circuits and Systems (ISCAS) 1–5 (2019).
+173. Azghadi, M. R., Iannella, N., Al-Sarawi, S., Indiveri, G. & Abbott, D. Spikebased synaptic plasticity in silicon: Design, implementation, application, and challenges. Proc. IEEE 102, 717–737 (2014).
+174. Huayaney, F. L. M., Nease, S. & Chicca, E. Learning in silicon beyond STDP: a neuromorphic implementation of multi-factor synaptic plasticity with Calcium-based dynamics. IEEE Trans. Circuits Syst. I: Regul. Pap. 63,2189–2199 (2016).
+175. Brink, S. et al. A learning-enabled neuron array IC based upon transistor channel models of biological phenomena. Biomed. Circuits Syst., IEEE Trans. 7, 71–81 (2013).
+176. Xia, Q. & Yang, J. J. Memristive crossbar arrays for brain-inspired computing. Nat. Mater. 18, 309 (2019).
+177. Boybat, I. et al. Neuromorphic computing with multi-memristive synapses. Nat. Commun. 9, 2514 (2018).
+178. Covi, E. et al. Analog memristive synapse in spiking networks implementing unsupervised learning. Front. Neurosci. 10, 1–13 (2016).
+179. Roxin, A. & Fusi, S. Efficient partitioning of memory systems and its importance for memory consolidation. PLOS Computational Biol. 9, 1–13 (2013).
+180. Hassenstein, B. & Reichardt, W. Systemtheoretische analyse der zeit-, reihenfolgen-und vorzeichenauswertung bei der bewegungsperzeption desrüsselkäfers chlorophanus. Z. f.ür. Naturforsch. B 11, 513–524 (1956).
+181. Chicca, E., Lichtsteiner, P., Delbruck, T., Indiveri, G. & Douglas, R. Modeling orientation selectivity using a neuromorphic multi-chip system. International Symposium on Circuits and Systems, (ISCAS) 1235–1238 (2006).
+182. Saal, H. P., Delhaye, B. P., Rayhaun, B. C. & Bensmaia, S. J. Simulating tactile signals from the whole hand with millisecond precision. Proc. Natl Acad. Sci. 114, E5693–E5702 (2017).
+183. Douglas, R., Martin, K. & Whitteridge, D. A canonical microcircuit for neocortex. Neural Comput. 1, 480–488 (1989).
+184. Binzegger, T., Douglas, R. & Martin, K. Topology and dynamics of the canonical circuit of cat V1. Neural Netw. 22, 1071–1078 (2009).
+185. Mante, V., Sussillo, D., Shenoy, K. V. & Newsome, W. T. Contextdependent computation by recurrent dynamics in prefrontal cortex. Nature 503, 78–84 (2013).
+186. Marcus, G. et al. The atoms of neural computation. Science 346, 551–552 (2014).
+187. Davies, M. Benchmarks for progress in neuromorphic computing. Nat. Mach. Intell. 1, 386–388 (2019).
+188. Mueggler, E., Rebecq, H., Gallego, G., Delbruck, T. & Scaramuzza, D. The event-camera dataset and simulator: Event-based data for pose estimation, visual odometry, and SLAM. Int. J. Robot. Res. 36, 142–149 (2017).
+189. Serrano-Gotarredona, T. & Linares-Barranco, B. Poker-dvs and mnist-dvs. their history, how they were made, and other details. Front. Neurosci. 9 (2015).
+190. Orchard, G. et al. Hfirst: a temporal approach to object recognition. IEEE Trans. pattern Anal. Mach. Intell. 37, 2028–2040 (2015).
+191. Amir, A. et al. A low power, fully event-based gesture recognition system. Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition 7243–7252 (2017).
+192. Calabrese, E. et al. DHP19: Dynamic vision sensor 3D human pose dataset. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (2019).

@@ -1,6 +1,6 @@
 # AI models collapse when trained on recursively generated data
 
-**Published:** 24 July 2024  
+**Published:** 2024-07-24  
 **Journal:** *Nature* volume 631, pages 755–759 (2024)  
 **Authors:** Ilia Shumailov, Zakhar Shumaylov, Yiren Zhao, Nicolas Papernot, Ross Anderson, Yarin Gal
 

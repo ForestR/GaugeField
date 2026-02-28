@@ -1,10 +1,10 @@
 # DeepSeek 双创新，OCR2 会“读”文档，mHC 改写残差十年规则
 
+Published: 2026-02-08
 Source: https://mp.weixin.qq.com/s/vKFxusFFLty5K97_z3lT0g
 
 **来源**：数据派THU  
 **作者**：孙记森 (Datawhale)  
-**日期**：2026年2月8日
 
 > **摘要**：本文介绍了 DeepSeek OCR2 模型与 mHC 新思路的核心技术创新。DeepSeek一直带有原创性，总是会给大家一些新的启发和思路。
 

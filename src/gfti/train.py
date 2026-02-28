@@ -140,6 +140,7 @@ def train_gfti(
 
     curvature_log = []
     test_errors = []
+    alpha_log = []
 
     for epoch in range(config.epochs):
         tau = config.tau_init + (config.tau_final - config.tau_init) * min(
@@ -168,6 +169,12 @@ def train_gfti(
                 z_t = model.transform(z)
                 kappa = curvature_loss(z, z_t, complexity_term=model.symmetry.complexity()).item()
                 curvature_log.append(kappa)
+                alpha_val = (
+                    model.symmetry.fixed_alpha
+                    if model.symmetry.fixed_alpha is not None
+                    else torch.sigmoid(model.symmetry.log_alpha).item()
+                )
+                alpha_log.append(alpha_val)
                 pred = model(X_test_t)
                 nmse = normalized_mse(pred, y_test_t)
                 test_errors.append(nmse)
@@ -188,6 +195,7 @@ def train_gfti(
     return {
         "test_nmse": final_nmse,
         "curvature": curvature_log,
+        "alpha_trajectory": alpha_log,
         "final_curvature": final_kappa,
         "final_alpha": final_alpha,
         "test_errors": test_errors,

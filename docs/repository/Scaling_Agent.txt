@@ -1,5 +1,6 @@
 # DeepMind：智能体越多越乱，Agent天花板出现了？
 
+Published: 2026-02-24
 Source: https://mp.weixin.qq.com/s/G3KeHlDCk4C8ytB43LofRA
 
 **来源**：机器之心  

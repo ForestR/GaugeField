@@ -84,11 +84,19 @@ def main():
         default=None,
         help="Fix branch: 1.0=continuous-only, 0.0=discrete-only, omit=learned",
     )
+    parser.add_argument(
+        "--beta",
+        type=float,
+        default=None,
+        help="Override curvature loss weight (from config). For β-ablation.",
+    )
     args = parser.parse_args()
 
     config_path = args.config or Path(__file__).parent / "configs" / f"universe_{args.universe.lower()}.yaml"
     with open(config_path) as f:
         cfg = yaml.safe_load(f)
+
+    beta = float(args.beta) if args.beta is not None else float(cfg.get("beta", 0.1))
 
     universe = get_universe(args.universe, cfg)
     train_config = TrainConfig(
@@ -97,7 +105,7 @@ def main():
         lr=float(cfg["lr"]),
         weight_decay=float(cfg.get("weight_decay", 0)),
         device=args.device,
-        beta=float(cfg.get("beta", 0.1)),
+        beta=beta,
     )
 
     output_dir = Path(args.output_dir)
@@ -109,7 +117,7 @@ def main():
         "lr": float(cfg["lr"]),
         "weight_decay": float(cfg.get("weight_decay", 0)),
         "device": args.device,
-        "beta": float(cfg.get("beta", 0.1)),
+        "beta": beta,
         "fixed_alpha": args.fixed_alpha,
     }
 
@@ -159,11 +167,13 @@ def main():
     nmse = [r["test_nmse"] for r in results["runs"]]
     results["test_nmse_mean"] = sum(nmse) / len(nmse)
     results["curvature_trajectories"] = [r["curvature"] for r in results["runs"]]
-    results["alpha_trajectories"] = [r.get("final_alpha") for r in results["runs"]]
+    results["alpha_trajectories"] = [r.get("alpha_trajectory", []) for r in results["runs"]]
+    results["final_alpha_per_seed"] = [r.get("final_alpha") for r in results["runs"]]
     print(f"GFTI test NMSE (mean): {results['test_nmse_mean']:.4f}")
 
     alpha_suffix = f"_alpha{args.fixed_alpha}" if args.fixed_alpha is not None else ""
-    out_path = output_dir / f"gfti_{args.universe}{alpha_suffix}.json"
+    beta_suffix = f"_beta{beta:.2f}" if args.beta is not None else ""
+    out_path = output_dir / f"gfti_{args.universe}{alpha_suffix}{beta_suffix}.json"
     with open(out_path, "w") as f:
         json.dump(results, f, indent=2, default=str)
     print(f"Saved to {out_path}")

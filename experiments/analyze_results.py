@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Analyze experiment results and compute N₉₀ ratios (v0.5.3)."""
+"""Analyze experiment results and compute N₉₀ ratios (v0.5.4)."""
 
 import argparse
 import json
@@ -78,6 +78,80 @@ def _curvature_causality_check(runs: list[dict], nmse_threshold: float = 0.10) -
     return {
         "n_kappa_leads": n_kappa_leads,
         "n_nmse_leads": n_nmse_leads,
+        "n_inconclusive": n_inconclusive,
+        "details": details,
+    }
+
+
+def _alpha_nmse_ordering_check(runs: list[dict], alpha_threshold: float = 0.5, nmse_threshold: float = 0.10) -> dict:
+    """
+    For each run, check whether α→0 (alpha < 0.5) precedes or lags NMSE < 10%.
+    Returns: {n_alpha_precedes, n_nmse_precedes, n_same, n_inconclusive, details}
+    """
+    n_alpha_precedes = 0
+    n_nmse_precedes = 0
+    n_same = 0
+    n_inconclusive = 0
+    details = []
+
+    for i, r in enumerate(runs):
+        alpha_traj = r.get("alpha_trajectory", [])
+        test_errors = r.get("test_errors", [])
+
+        if not alpha_traj or not test_errors or len(alpha_traj) != len(test_errors):
+            n_inconclusive += 1
+            details.append({"seed_idx": i, "status": "inconclusive", "reason": "missing_data"})
+            continue
+
+        epoch_alpha_below = None
+        for j, a in enumerate(alpha_traj):
+            if a < alpha_threshold:
+                epoch_alpha_below = j
+                break
+
+        epoch_nmse_below = None
+        for j, e in enumerate(test_errors):
+            if e < nmse_threshold:
+                epoch_nmse_below = j
+                break
+
+        if epoch_alpha_below is None and epoch_nmse_below is None:
+            n_inconclusive += 1
+            details.append({"seed_idx": i, "status": "inconclusive", "reason": "neither_reached"})
+        elif epoch_alpha_below is not None and epoch_nmse_below is None:
+            n_alpha_precedes += 1
+            details.append({"seed_idx": i, "status": "alpha_precedes", "epoch_alpha": epoch_alpha_below})
+        elif epoch_alpha_below is None and epoch_nmse_below is not None:
+            n_nmse_precedes += 1
+            details.append({"seed_idx": i, "status": "nmse_precedes", "epoch_nmse": epoch_nmse_below})
+        elif epoch_alpha_below < epoch_nmse_below:
+            n_alpha_precedes += 1
+            details.append({
+                "seed_idx": i,
+                "status": "alpha_precedes",
+                "epoch_alpha": epoch_alpha_below,
+                "epoch_nmse": epoch_nmse_below,
+            })
+        elif epoch_nmse_below < epoch_alpha_below:
+            n_nmse_precedes += 1
+            details.append({
+                "seed_idx": i,
+                "status": "nmse_precedes",
+                "epoch_alpha": epoch_alpha_below,
+                "epoch_nmse": epoch_nmse_below,
+            })
+        else:
+            n_same += 1
+            details.append({
+                "seed_idx": i,
+                "status": "same",
+                "epoch": epoch_alpha_below,
+            })
+
+    return {
+        "n_alpha_precedes": n_alpha_precedes,
+        "n_nmse_precedes": n_nmse_precedes,
+        "n_same": n_same,
         "n_inconclusive": n_inconclusive,
         "details": details,
     }
@@ -173,6 +247,25 @@ def main():
                     nmse = data.get("test_nmse_mean", float("nan"))
                     print(f"    Baseline {bl}: {nmse:.4f} (no runs)")
 
+            # --- α trajectory (Universe B) ---
+            if universe == "B" and gfti_runs:
+                final_alphas = gfti.get("final_alpha_per_seed") or [r.get("final_alpha") for r in gfti_runs]
+                final_alphas = [a for a in final_alphas if a is not None]
+                if final_alphas:
+                    alpha_mean, alpha_std = _mean_std(final_alphas)
+                    print(f"\n  α trajectory (final α per seed): mean {alpha_mean:.4f} ± {alpha_std:.4f}")
+                    if alpha_mean > 0.5:
+                        print("    [WARNING] α_mean > 0.5 → continuous branch dominates; discrete discovery story weakens.")
+
+                # --- α precedes/lags NMSE (v0.5.4) ---
+                if any(r.get("alpha_trajectory") for r in gfti_runs):
+                    order = _alpha_nmse_ordering_check(gfti_runs)
+                    print(f"\n  α vs NMSE temporal ordering (α<0.5 vs NMSE<10%):")
+                    print(f"    α precedes NMSE: {order['n_alpha_precedes']} seeds")
+                    print(f"    NMSE precedes α: {order['n_nmse_precedes']} seeds")
+                    print(f"    Same checkpoint: {order['n_same']} seeds")
+                    print(f"    Inconclusive: {order['n_inconclusive']} seeds")
+
             # --- Curvature causality check ---
             if gfti_runs and any(r.get("curvature") for r in gfti_runs):
                 print("\n  Curvature causality (κ vs test NMSE < 10%):")
@@ -207,6 +300,30 @@ def main():
                         R = best_baseline_n90 / gfti_n90
                         best_bl = min(baseline_n90s, key=baseline_n90s.get)
                         print(f"\n  R = N₉₀(best_baseline)/N₉₀(GFTI) = {best_baseline_n90}/{gfti_n90} = {R:.2f} (best baseline: {best_bl})")
+
+        # --- β-ablation (v0.5.4) ---
+        beta_pattern = f"gfti_{universe}_beta*.json"
+        beta_files = sorted(results_dir.glob(beta_pattern))
+        if beta_files:
+            print("\n  β-ablation (curvature strength):")
+            beta_results = []
+            for p in beta_files:
+                stem = p.stem
+                try:
+                    beta_val = float(stem.split("beta")[-1])
+                except (ValueError, IndexError):
+                    continue
+                with open(p) as f:
+                    data = json.load(f)
+                runs = data.get("runs", [])
+                if runs:
+                    vals = [r["test_nmse"] for r in runs]
+                    mean, std = _mean_std(vals)
+                    cc = _curvature_causality_check(runs) if any(r.get("curvature") for r in runs) else {}
+                    verdict = "κ leads" if cc.get("n_kappa_leads", 0) > cc.get("n_nmse_leads", 0) else "NMSE leads" if cc.get("n_nmse_leads", 0) > 0 else "inconclusive"
+                    beta_results.append((beta_val, mean, std, verdict))
+            for beta_val, mean, std, verdict in sorted(beta_results, key=lambda x: x[0]):
+                print(f"    β={beta_val:.2f}: NMSE {mean:.4f} ± {std:.4f}  [{verdict}]")
 
 
 if __name__ == "__main__":

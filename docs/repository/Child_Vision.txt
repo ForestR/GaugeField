@@ -1,8 +1,11 @@
 # 最强大模型的视觉能力不如6岁小孩
+
+Published: 2026-01-22
 Source: https://mp.weixin.qq.com/s/OUBbiZJFxePebVXKqw07Vw
 
 henry 发自 凹非寺
 量子位 | 公众号 QbitAI
+
 谁敢想？
 
 视觉推理这一块，大模型现在还嫩得像个3岁小孩。
